@@ -11,8 +11,9 @@ import java.nio.file.Paths;
 public class Main {
 
     private static final String ARGS_PATTERN = "[current year]-[group id]-gm --address [server address] --port [port number] --conf [path to config file]";
-    private static int port;
+    private static int csPort;
     private static int numOfPlayers;
+    private static String csAddress;
 
 
 
@@ -21,8 +22,9 @@ public class Main {
             return;
         }
 
-        port = Integer.parseInt(args[4]);
+        csPort = Integer.parseInt(args[4]);
         numOfPlayers = getNumOfPlayers(args[6]);
+        csAddress = args[2];
 
         startGame();
     }
@@ -31,7 +33,7 @@ public class Main {
     private static void startGame() {
         System.out.println("GM starts");
 
-        Work work = new Work(port, numOfPlayers);
+        Work work = new Work(csPort, numOfPlayers, csAddress);
         work.run();
 
         shutDownGame();
@@ -104,8 +106,7 @@ public class Main {
     }
 
     private static boolean isProperAddress(String str) {
-        //i dont know what address is needed for and dont care right now ~ Lukasz
-        return true;
+        return true; //xD
     }
 
     private static boolean isPortOpened(int port) {
