@@ -10,24 +10,20 @@ import java.util.TimerTask;
 
 public class Work {
 
-	public boolean isWorking() {
-		return isWorking;
-	}
-
 	private boolean isWorking = false;
 	private int port;
 	private int numOfPlayers;
 
-	private ServerSocket server;
-	private Socket game;
-	private ArrayList<Socket> players;
+	private ServerSocket csSocket;
+	private Socket gmSocket;
+	private ArrayList<Socket> plSockets;
 
 
 
 	Work(int port, int numberOfPlayers) {
 		this.port = port;
 		this.numOfPlayers = numberOfPlayers;
-		players = new ArrayList<>(numberOfPlayers);
+		plSockets = new ArrayList<>(numberOfPlayers);
 
 		System.out.println("num:" + numberOfPlayers);
 	}
@@ -54,25 +50,25 @@ public class Work {
 			return;
 		}
 
-		System.out.println("work starts...");
+		System.out.println("work starts");
 		isWorking = true;
 		doWork();
 	}
 
 	private void stop() {
-		System.out.println("work stops...");
+		System.out.println("work stops");
 		isWorking = false;
 
 		closeSockets();
 	}
 
 	private boolean openServerSocket() {
-		System.out.println("opening server socket...");
+		System.out.println("opening cs socket");
 		try {
-			server = new ServerSocket(port);
+			csSocket = new ServerSocket(port);
 
 		} catch (IOException e) {
-			System.err.println("error occurred during opening of server socket");
+			System.err.println("error occurred during opening of csSocket socket");
 			e.printStackTrace();
 			return false;
 		}
@@ -81,11 +77,11 @@ public class Work {
 	}
 
 	private boolean connectGameSocket() {
-		System.out.println("connecting game...");
+		System.out.println("connecting gm socket");
 		try {
-			game = server.accept();
+			gmSocket = csSocket.accept();
 		} catch (IOException e) {
-			System.err.println("failed to connect game");
+			System.err.println("failed to connect gm socket");
 			e.printStackTrace();
 			return false;
 		}
@@ -94,16 +90,16 @@ public class Work {
 	}
 
 	private boolean connectPlayers() {
-		System.out.println("connecting players...");
+		System.out.println("connecting pl sockets");
 		for (int i = 0; i < numOfPlayers; i++) {
 			System.out.println("\tconnecting player num " + i + " of " + numOfPlayers);
 
 			try {
-				Socket player = server.accept();
-				players.set(i, player);
+				Socket player = csSocket.accept();
+				plSockets.set(i, player);
 
 			} catch (IOException e) {
-				System.err.println("failed to connect players");
+				System.err.println("failed to connect pl sockets");
 				e.printStackTrace();
 				return false;
 			}
@@ -113,28 +109,42 @@ public class Work {
 	}
 
 	private void closeSockets() {
-		System.out.println("closing sockets...");
-//		try {
-//			game.close();
-//		} catch (IOException e) {
-//			System.err.println("failed to close game socket");
-//			e.printStackTrace();
-//		}
+		System.out.println("closing sockets");
+		try {
+			gmSocket.close();
 
-//		players.forEach((p) -> {
-//			try {
-//				p.close();
-//			} catch (IOException e) {
-//				System.err.println("failed to close player socket");
-//				e.printStackTrace();
-//			}
-//		});
+		} catch (IOException e) {
+			System.err.println("failed to close gmSocket socket");
+			e.printStackTrace();
+
+		} catch (NullPointerException e) {
+			System.out.println("no gm socket to close");
+		}
+
+
+		plSockets.forEach((p) -> {
+			try {
+				p.close();
+
+			} catch (IOException e) {
+				System.err.println("failed to close player socket");
+				e.printStackTrace();
+
+			} catch (NullPointerException e) {
+				System.out.println("no pl socket to close");
+			}
+		});
+
 
 		try {
-			server.close();
+			csSocket.close();
+
 		} catch (IOException e) {
-			System.err.println("failed to close server socket");
+			System.err.println("failed to close csSocket socket");
 			e.printStackTrace();
+
+		} catch (NullPointerException e) {
+			System.out.println("no cs socket to close");
 		}
 	}
 
@@ -148,7 +158,7 @@ public class Work {
 		new Timer().schedule(stopTask, 5000);
 
 		while (isWorking) {
-			System.out.println("working...");
+			System.out.println("working");
 
 			try {
 				Thread.sleep(1000);
