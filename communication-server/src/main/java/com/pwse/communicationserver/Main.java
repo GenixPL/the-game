@@ -12,7 +12,7 @@ import org.json.JSONTokener;
 
 public class Main {
 
-	private static final String ARGS_PATTERN = "[current year]-[group id]-cs --port [port number] --conf [path to config files]";
+	private static final String ARGS_PATTERN = "[current year]-[group id]-cs --port [port number] --conf [path to config file]";
 	private static int port;
 	private static int numOfPlayers;
 
