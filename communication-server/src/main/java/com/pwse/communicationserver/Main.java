@@ -2,39 +2,47 @@ package com.pwse.communicationserver;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 public class Main {
 
 	private static final String ARGS_PATTERN = "[current year]-[group id]-cs --port [port number] --conf [path to config files]";
+	private static int port;
+	private static int numOfPlayers;
 
 
-	public static void main(String[] args) {
+
+	public static void main(String args[]) {
 		if (!isEveryArgCorrect(args)) {
 			return;
 		}
 
+		port = Integer.parseInt(args[2]);
+		numOfPlayers = getNumOfPlayers(args[4]);
+
 		startServer();
 	}
+
 
 	private static void startServer() {
 		System.out.println("Communication server starts...");
 
-		while (true) {
-			try {
-				Thread.sleep(2000);
-				System.out.println("Communication server works...");
+		Work work = new Work(port, numOfPlayers);
+		work.run();
 
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		shutDownServer();
 	}
 
 	private static void shutDownServer() {
 		System.out.println("Communication server shuts down...");
+		System.exit(0);
 	}
-
 
 	private static void informAboutWrongArgsPattern() {
 		System.err.println("You should use following pattern for input arguments: `" + ARGS_PATTERN + "`");
@@ -50,7 +58,7 @@ public class Main {
 		}
 	}
 
-	private static boolean isEveryArgCorrect(String[] args) {
+	private static boolean isEveryArgCorrect(String args[]) {
 		if (args.length != 5) {
 			informAboutWrongArgsPattern();
 			return false;
@@ -121,5 +129,18 @@ public class Main {
 		}
 
 		return true;
+	}
+
+	private static int getNumOfPlayers(String filePath) {
+		String fileContent = null;
+		try {
+			fileContent = new String(Files.readAllBytes(Paths.get(filePath)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		JSONObject object = new JSONObject(fileContent);
+
+		return object.getInt("number-of-players");
 	}
 }
