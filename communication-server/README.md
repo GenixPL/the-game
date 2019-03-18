@@ -1,5 +1,6 @@
 #How to start program
 ###### Option 1:
+    (sometimes work sometimes not)
     - open terminal
     - go to out/production/classes/com/pwse/communicationserver
     - type `java Main [arguments]`
