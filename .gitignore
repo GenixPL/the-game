@@ -12,3 +12,9 @@ communication-server/out/
 player/\.gradle/
 
 player/out/
+
+communication-server/gradle/
+
+game-master/gradle/
+
+player/gradle/
