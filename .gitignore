@@ -1,0 +1,10 @@
+
+\.idea/
+
+game-master/\.gradle/
+
+game-master/out/
+
+communication-server/\.gradle/
+
+communication-server/out/
