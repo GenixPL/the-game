@@ -31,7 +31,7 @@ public class Main {
 
 
 	private static void startServer() {
-		System.out.println("Communication server starts...");
+		System.out.println("Communication server starts");
 
 		Work work = new Work(port, numOfPlayers);
 		work.run();
@@ -40,7 +40,7 @@ public class Main {
 	}
 
 	private static void shutDownServer() {
-		System.out.println("Communication server shuts down...");
+		System.out.println("Communication server shuts down");
 		System.exit(0);
 	}
 
