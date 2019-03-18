@@ -1,6 +1,4 @@
-package com.pwse.gamemaster;
-
-import org.json.JSONObject;
+package com.pwse.player;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,9 +8,8 @@ import java.nio.file.Paths;
 
 public class Main {
 
-    private static final String ARGS_PATTERN = "[current year]-[group id]-gm --address [server address] --port [port number] --conf [path to config file]";
+    private static final String ARGS_PATTERN = "[current year]-[group id]-pl --address [server address] --port [port number] --conf [path to config file]";
     private static int csPort;
-    private static int numOfPlayers;
     private static String csAddress;
 
 
@@ -23,7 +20,6 @@ public class Main {
         }
 
         csPort = Integer.parseInt(args[4]);
-        numOfPlayers = getNumOfPlayers(args[6]);
         csAddress = args[2];
 
         startGame();
@@ -34,14 +30,14 @@ public class Main {
     private static void startGame() {
         System.out.println("GM starts");
 
-        Work work = new Work(csPort, numOfPlayers, csAddress);
+        Work work = new Work(csPort, csAddress);
         work.run();
 
         shutDownGame();
     }
 
     private static void shutDownGame() {
-        System.out.println("GM shuts down");
+        System.out.println("PL shuts down");
         System.exit(0);
     }
 
@@ -51,8 +47,8 @@ public class Main {
             return false;
 
         }
-        //check if first arg ends with "gm"
-        if (!args[0].substring(args[0].length() - 2).equals("gm")) {
+        //check if first arg ends with "pl"
+        if (!args[0].substring(args[0].length() - 2).equals("pl")) {
             informAboutWrongArgsPattern();
             return false;
         }
@@ -146,18 +142,5 @@ public class Main {
         }
 
         return true;
-    }
-
-    private static int getNumOfPlayers(String filePath) {
-        String fileContent = null;
-        try {
-            fileContent = new String(Files.readAllBytes(Paths.get(filePath)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        JSONObject object = new JSONObject(fileContent);
-
-        return object.getInt("number-of-players");
     }
 }

@@ -1,9 +1,9 @@
 #How to start program
 ###### Option 1:
-    (sometimes work sometimes not)
     - open terminal
-    - go to out/production/classes/com/pwse/communicationserver
-    - type `java Main [arguments]`
+    - go to out/production/classes
+    - type `java com.pwse.communicationserver.Main [arguments]`
+        example: `java com.pwse.communicationserver.Main 2019-01-cs --port "2000" --conf "C:\Users\genix\Desktop\conf.json"`
     
 ###### Option 2: (IntelliJ)
     - create new run configuration
