@@ -18,3 +18,9 @@ communication-server/gradle/
 game-master/gradle/
 
 player/gradle/
+
+game-master/build/
+
+player/build/
+
+communication-server/build/
