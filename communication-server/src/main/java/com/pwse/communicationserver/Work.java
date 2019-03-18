@@ -14,8 +14,9 @@ public class Work {
 	private int port;
 	private int numOfPlayers;
 
-	private ServerSocket csSocket;
+	private ServerSocket gmServer;
 	private Socket gmSocket;
+	private ArrayList<ServerSocket> plServers;
 	private ArrayList<Socket> plSockets;
 
 
@@ -23,6 +24,7 @@ public class Work {
 	Work(int port, int numberOfPlayers) {
 		this.port = port;
 		this.numOfPlayers = numberOfPlayers;
+		plServers = new ArrayList<>(numberOfPlayers);
 		plSockets = new ArrayList<>(numberOfPlayers);
 	}
 
@@ -33,7 +35,7 @@ public class Work {
 
 
 	private void start() {
-		boolean isServerOpened = openServerSocket();
+		boolean isServerOpened = openServerSockets();
 		if (!isServerOpened) {
 			return;
 		}
@@ -60,24 +62,32 @@ public class Work {
 		closeSockets();
 	}
 
-	private boolean openServerSocket() {
-		System.out.println("opening cs socket");
-		try {
-			csSocket = new ServerSocket(port);
+	private boolean openServerSockets() {
+		System.out.println("opening sockets");
 
-		} catch (IOException e) {
-			System.err.println("error occurred during opening of csSocket socket");
-			e.printStackTrace();
-			return false;
+		for (int i = 0; i < numOfPlayers; i++) {
+			try {
+				if (i == 0) {
+					gmServer = new ServerSocket(port);
+
+				} else {
+					plServers.add(new ServerSocket(port + i));
+				}
+
+			} catch (IOException e) {
+				System.err.println("error occurred during opening of csSocket socket");
+				e.printStackTrace();
+				return false;
+			}
 		}
 
 		return true;
 	}
 
 	private boolean connectGameSocket() {
-		System.out.println("connecting gm socket");
+		System.out.println("connecting gm socket at port: " + port);
 		try {
-			gmSocket = csSocket.accept();
+			gmSocket = gmServer.accept();
 		} catch (IOException e) {
 			System.err.println("failed to connect gm socket");
 			e.printStackTrace();
@@ -89,12 +99,12 @@ public class Work {
 
 	private boolean connectPlayers() {
 		System.out.println("connecting pl sockets");
-		for (int i = 0; i < numOfPlayers; i++) {
-			System.out.println("\tconnecting player num " + i + " of " + numOfPlayers);
+		for (int i = 1; i < numOfPlayers + 1; i++) {
+			System.out.println("\tconnecting player num " + i + " of " + numOfPlayers + " at port: " + (port + i));
 
 			try {
-				Socket player = csSocket.accept();
-				plSockets.set(i, player);
+				Socket player = plServers.get(i - 1).accept();
+				plSockets.add(player);
 
 			} catch (IOException e) {
 				System.err.println("failed to connect pl sockets");
@@ -108,11 +118,12 @@ public class Work {
 
 	private void closeSockets() {
 		System.out.println("closing sockets");
+
 		try {
 			gmSocket.close();
 
 		} catch (IOException e) {
-			System.err.println("failed to close gmSocket socket");
+			System.err.println("failed to close cs socket");
 			e.printStackTrace();
 
 		} catch (NullPointerException e) {
@@ -135,7 +146,7 @@ public class Work {
 
 
 		try {
-			csSocket.close();
+			gmSocket.close();
 
 		} catch (IOException e) {
 			System.err.println("failed to close csSocket socket");

@@ -25,12 +25,32 @@ public class Work {
 	}
 
 
+
 	private void start() {
 		connectWithCs();
+
+		System.out.println("work starts");
+		isWorking = true;
+		doWork();
 	}
 
 	private void stop() {
+		System.out.println("work stops");
+		isWorking = false;
 
+		closeSocket();
+	}
+
+	private void doWork() {
+		while (true) {
+			System.out.println("working");
+
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private boolean connectWithCs() {
@@ -46,5 +66,20 @@ public class Work {
 		}
 
 		return true;
+	}
+
+	private void closeSocket() {
+		System.out.println("closing socket");
+
+		try {
+			csSocket.close();
+
+		} catch (IOException e) {
+			System.err.println("failed to close cs socket");
+			e.printStackTrace();
+
+		} catch (NullPointerException e) {
+			System.out.println("no cs socket to close");
+		}
 	}
 }

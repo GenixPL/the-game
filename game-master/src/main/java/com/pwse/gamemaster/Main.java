@@ -30,6 +30,7 @@ public class Main {
     }
 
 
+
     private static void startGame() {
         System.out.println("GM starts");
 

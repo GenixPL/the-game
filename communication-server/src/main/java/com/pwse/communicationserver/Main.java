@@ -2,13 +2,11 @@ package com.pwse.communicationserver;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 public class Main {
 
@@ -28,6 +26,7 @@ public class Main {
 
 		startServer();
 	}
+
 
 
 	private static void startServer() {
@@ -82,12 +81,6 @@ public class Main {
 			return false;
 		}
 
-		//check if port is avaliable
-		if (!isPortAvailable(Integer.parseInt(args[2]))) {
-			System.err.println("Given port is not available");
-			return false;
-		}
-
 		//check if fourth arg is "--conf"
 		if (!args[3].equals("--conf")) {
 			informAboutWrongArgsPattern();
@@ -100,19 +93,32 @@ public class Main {
 			return false;
 		}
 
+		//check if port is avaliable
+		if (!isEveryPortAvailable(Integer.parseInt(args[2]), getNumOfPlayers(args[4]))) {
+			System.err.println("Given ports are not available");
+			return false;
+		}
+
 		return true;
 	}
 
-	private static boolean isPortAvailable(int port) {
-		try {
-			new Socket("localhost", port);
+	/**
+	 * We are checking many ports:
+	 *  port (first) - for gm
+	 *  port+i - for each player
+	 */
+	private static boolean isEveryPortAvailable(int port, int numOfPlayers) {
+		for (int i = 0; i < numOfPlayers + 1; i++) {
+			try {
+				new Socket("localhost", port + i);
 
-			// If the code makes it this far without an exception it mean something is using the port and has responded.
-			return false;
+				// If the code makes it this far without an exception it mean something is using the port and has responded.
+				return false;
 
-		} catch (IOException e) {
-			return true;
+			} catch (IOException e) { }
 		}
+
+		return true;
 	}
 
 	private static boolean isFileCorrect(String path) {
