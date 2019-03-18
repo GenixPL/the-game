@@ -24,8 +24,6 @@ public class Work {
 		this.port = port;
 		this.numOfPlayers = numberOfPlayers;
 		plSockets = new ArrayList<>(numberOfPlayers);
-
-		System.out.println("num:" + numberOfPlayers);
 	}
 
 	public void run() {
