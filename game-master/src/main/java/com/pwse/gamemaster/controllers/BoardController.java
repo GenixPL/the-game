@@ -2,6 +2,7 @@ package com.pwse.gamemaster.controllers;
 
 import com.pwse.gamemaster.models.board.Board;
 import com.pwse.gamemaster.models.board.BoardDimensions;
+import com.pwse.gamemaster.models.board.BoardField;
 import com.pwse.gamemaster.models.piece.Piece;
 
 import java.util.ArrayList;
@@ -21,13 +22,13 @@ public class BoardController {
 
 
 
-	public BoardController(BoardDimensions boardDimensions, Piece[] startingPieces) {
+	public BoardController(BoardDimensions boardDimensions, BoardField[] goals) {
 		this.bDim = boardDimensions;
 
 		this.pieces = new ArrayList<>(0); //TODO: 0 should be changed to passed init value of pieces
 		this.b = new Board(boardDimensions);
 
-		addStartingPieces(startingPieces);
+		addGoals(goals);
 		initPieceSpawning();
 	}
 
@@ -37,10 +38,9 @@ public class BoardController {
 
 
 
-	private void addStartingPieces(Piece[] pieces) {
-		for (Piece p : pieces) {
-			this.pieces.add(p);
-			b.addPiece(p);
+	private void addGoals(BoardField[] goals) {
+		for (BoardField bf : goals) {
+			b.addGoal(bf);
 		}
 	}
 
@@ -52,7 +52,8 @@ public class BoardController {
 			}
 		};
 
-		new Timer().scheduleAtFixedRate(spawnPiece, 0, 10000); //TODO: period should be changed to passed spawn frequency
+		int time = 10000; //TODO: time should be changed to passed spawn frequency
+		new Timer().scheduleAtFixedRate(spawnPiece, time, time);
 	}
 
 	private void addRandomPiece() {

@@ -12,7 +12,6 @@ public class Board {
 		this.dim = boardDimensions;
 
 		createFields();
-		initFields();
 	}
 
 	public void print() {
@@ -21,10 +20,16 @@ public class Board {
 		System.out.println();
 
 		//print upper line
-		printFrame();
+		printHorizontalLine();
 
-		//print board itself
 		for (int y = 0; y < dim.getHeight(); y++) {
+
+			//print team areas separators
+			if (y == (dim.getHeightOfTeamArea()) || y == (dim.getHeight() - dim.getHeightOfTeamArea())) {
+				printHorizontalLine();
+			}
+
+			//print board itself
 			System.out.print("\t|");
 			for (int x = 0; x < dim.getWidth(); x++) {
 				fields[x][y].print();
@@ -33,7 +38,7 @@ public class Board {
 		}
 
 		//print bottom line
-		printFrame();
+		printHorizontalLine();
 	}
 
 	/* PIECE */
@@ -52,50 +57,24 @@ public class Board {
 			throw new Exception("Moving piece without previous positions");
 		}
 
-		setFieldAsTask(piece.getPrevPosX(), piece.getPrevPosY());
+		setFieldAsBackground(piece.getPrevPosX(), piece.getPrevPosY());
 		setFieldAsPiece(piece.getPosX(), piece.getPosY());
 	}
 
-
-
-
-	private void createFields() {
-		fields = new BoardField[dim.getWidth()][dim.getHeight()];
-
-		for (int x = 0; x < dim.getWidth(); x++) {
-			for (int y = 0; y < dim.getHeight(); y++) {
-				fields[x][y] = new BoardField();
-			}
-		}
+	/* GOAL */
+	public void addGoal(BoardField bf) {
+		fields[bf.getPosX()][bf.getPosY()] = bf;
+		setFieldAsGoal(bf.getPosX(), bf.getPosY());
 	}
 
-	/**
-	 * t - tasks area
-	 * g - goal area
-	 */
-	private void initFields() {
-		for (int x = 0; x < dim.getWidth(); x++) {
-			for (int y = 0; y < dim.getHeight(); y++) {
-				if (y < dim.getHeightOfTeamArea()) {
-					//mark red goal area
-					fields[x][y].fieldChar = 'g'; //TODO: all of those should be moved to separate functions, not sure which class should be responsible
-					fields[x][y].fieldColor = FieldColors.redTeamColor;
-
-				} else if (y >= (dim.getHeight() - dim.getHeightOfTeamArea())) {
-					//mark blue goal area
-					fields[x][y].fieldChar = 'g';
-					fields[x][y].fieldColor = FieldColors.blueTeamColor;
-
-				} else {
-					//mark tasks area
-					fields[x][y].fieldChar = 't';
-					fields[x][y].fieldColor = FieldColors.taskFieldColor;
-				}
-			}
-		}
+	public void removeGoal(BoardField bf) {
+		fields[bf.getPosX()][bf.getPosY()] = bf;
+		setFieldAsBackground(bf.getPosX(), bf.getPosY());
 	}
 
-	private void printFrame() {
+
+
+	private void printHorizontalLine() {
 		System.out.print("\t|");
 		for (int x = 0; x < dim.getWidth(); x++) {
 			System.out.print("-");
@@ -103,14 +82,35 @@ public class Board {
 		System.out.print("|\n");
 	}
 
-	/* SET FIELD */
-	private void setFieldAsTask(int posX, int posY) {
-		fields[posX][posY].fieldChar = 't';
-		fields[posX][posY].fieldColor = FieldColors.taskFieldColor;
+	/* FIELD */
+	/**
+	 * b - background
+	 * g - goal
+	 * p - piece
+	 */
+	private void createFields() {
+		fields = new BoardField[dim.getWidth()][dim.getHeight()];
+
+		for (int x = 0; x < dim.getWidth(); x++) {
+			for (int y = 0; y < dim.getHeight(); y++) {
+				fields[x][y] = new BoardField(x, y, false);
+				setFieldAsBackground(x, y);
+			}
+		}
+	}
+
+	private void setFieldAsBackground(int posX, int posY) {
+		fields[posX][posY].fieldChar = 'b';
+		fields[posX][posY].fieldColor = FieldColors.backgroundColor;
 	}
 
 	private void setFieldAsPiece(int posX, int posY) {
 		fields[posX][posY].fieldChar = 'p';
 		fields[posX][posY].fieldColor = FieldColors.pieceColor;
+	}
+
+	private void setFieldAsGoal(int posX, int posY) {
+		fields[posX][posY].fieldChar = 'g';
+		fields[posX][posY].fieldColor = FieldColors.goalColor;
 	}
 }

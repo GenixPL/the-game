@@ -1,6 +1,8 @@
 package com.pwse.gamemaster;
 
+import com.pwse.gamemaster.models.board.Board;
 import com.pwse.gamemaster.models.board.BoardDimensions;
+import com.pwse.gamemaster.models.board.BoardField;
 import com.pwse.gamemaster.models.piece.Piece;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,9 +40,9 @@ public class Main {
     private static void startGame(String[] args) {
         System.out.println("GM starts");
         BoardDimensions dim = getBoardDimensions(args[6]);
-        Piece pieces[] = getPieces(args[6]).toArray(new Piece[0]);
+        BoardField[] goals = getGoals(args[6]).toArray(new BoardField[0]);
 
-        Work work = new Work(csPort, numOfPlayers, csAddress, dim, pieces);
+        Work work = new Work(csPort, numOfPlayers, csAddress, dim, goals);
         work.run();
 
         shutDownGame();
@@ -170,19 +172,19 @@ public class Main {
         return new BoardDimensions(w, h, hoga);
     }
 
-    private static ArrayList<Piece> getPieces(String filePath) {
+    private static ArrayList<BoardField> getGoals(String filePath) {
         JSONObject file = new JSONObject(getFileContent(filePath));
-        JSONArray piecesArr = file.getJSONArray("pieces");
+        JSONArray goalsArr = file.getJSONArray("goals");
 
-        ArrayList<Piece> pieces = new ArrayList<>(0);
-        for (int i = 0; i < piecesArr.length(); i++) {
-            JSONObject piece = piecesArr.getJSONObject(i);
+        ArrayList<BoardField> goals = new ArrayList<>(0);
+        for (int i = 0; i < goalsArr.length(); i++) {
+            JSONObject piece = goalsArr.getJSONObject(i);
             int posX = piece.getInt("x");
             int posY = piece.getInt("y");
-            pieces.add(Piece.getPositionedInstance(posX, posY));
+            goals.add(new BoardField(posX, posY, true));
         }
 
-        return pieces;
+        return goals;
     }
 
     private static String getFileContent(String filePath) {
