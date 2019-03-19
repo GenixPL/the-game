@@ -1,7 +1,6 @@
 package com.pwse.gamemaster;
 
-import com.pwse.gamemaster.models.BoardDimensions;
-import com.pwse.gamemaster.models.BoardField;
+import com.pwse.gamemaster.models.board.BoardDimensions;
 import org.json.JSONObject;
 
 import java.io.File;

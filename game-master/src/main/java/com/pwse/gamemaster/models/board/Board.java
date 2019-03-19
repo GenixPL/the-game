@@ -1,4 +1,6 @@
-package com.pwse.gamemaster.models;
+package com.pwse.gamemaster.models.board;
+
+import com.pwse.gamemaster.models.piece.Piece;
 
 public class Board {
 	private BoardDimensions dim;
@@ -33,6 +35,28 @@ public class Board {
 		//print bottom line
 		printFrame();
 	}
+
+	/* PIECE */
+	public void addPiece(Piece piece) {
+		setFieldAsPiece(piece.getPosX(), piece.getPosY());
+	}
+
+	/**
+	 * It move piece's board position using current and previous positions from Piece
+	 * @param piece Piece to move
+	 * @throws Exception Throws exception if piece wasn't moved (its previous positions equal -1)
+	 */
+	public void movePiece(Piece piece) throws Exception {
+		if (piece.getPrevPosX() < 0 || piece.getPrevPosY() < 0) {
+			System.err.println("Failed during piece moving, given piece couldn't have been in given place");
+			throw new Exception("Moving piece without previous positions");
+		}
+
+		setFieldAsTask(piece.getPrevPosX(), piece.getPrevPosY());
+		setFieldAsPiece(piece.getPosX(), piece.getPosY());
+	}
+
+
 
 
 	private void createFields() {
@@ -77,5 +101,16 @@ public class Board {
 			System.out.print("-");
 		}
 		System.out.print("|\n");
+	}
+
+	/* SET FIELD */
+	private void setFieldAsTask(int posX, int posY) {
+		fields[posX][posY].fieldChar = 't';
+		fields[posX][posY].fieldColor = FieldColors.taskFieldColor;
+	}
+
+	private void setFieldAsPiece(int posX, int posY) {
+		fields[posX][posY].fieldChar = 'p';
+		fields[posX][posY].fieldColor = FieldColors.pieceColor;
 	}
 }

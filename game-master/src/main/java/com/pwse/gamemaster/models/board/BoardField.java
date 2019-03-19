@@ -1,4 +1,4 @@
-package com.pwse.gamemaster.models;
+package com.pwse.gamemaster.models.board;
 
 public class BoardField {
 	private static final String ANSI_RESET  = "\u001B[0m";

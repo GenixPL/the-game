@@ -1,7 +1,7 @@
 package com.pwse.gamemaster;
 
 import com.pwse.gamemaster.controllers.BoardController;
-import com.pwse.gamemaster.models.BoardDimensions;
+import com.pwse.gamemaster.models.board.BoardDimensions;
 
 import java.io.IOException;
 import java.net.Socket;

@@ -1,4 +1,4 @@
-package com.pwse.gamemaster.models;
+package com.pwse.gamemaster.models.board;
 
 public class BoardDimensions {
 	private int width;
