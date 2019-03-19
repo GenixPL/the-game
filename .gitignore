@@ -8,3 +8,19 @@ game-master/out/
 communication-server/\.gradle/
 
 communication-server/out/
+
+player/\.gradle/
+
+player/out/
+
+communication-server/gradle/
+
+game-master/gradle/
+
+player/gradle/
+
+game-master/build/
+
+player/build/
+
+communication-server/build/
