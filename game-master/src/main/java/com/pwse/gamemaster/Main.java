@@ -82,10 +82,10 @@ public class Main {
         }
 
         //check if port is available
-        if (!isPortOpened(Integer.parseInt(args[4]))) {
-            System.err.println("Given port is not opened");
-            return false;
-        }
+//        if (!isPortOpened(Integer.parseInt(args[4]))) {
+//            System.err.println("Given port is not opened");
+//            return false;
+//        } commented for board debugging
 
         //check if sixth arg is "--conf"
         if (!args[5].equals("--conf")) {

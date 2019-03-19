@@ -1,5 +1,8 @@
 package com.pwse.gamemaster;
 
+import com.pwse.gamemaster.controllers.BoardController;
+import com.pwse.gamemaster.models.BoardDimensions;
+
 import java.io.IOException;
 import java.net.Socket;
 
@@ -8,8 +11,11 @@ public class Work {
 	private int csPort;
 	private int numOfPlayers;
 	private String csAddress;
-	private boolean isWorking = false;
 
+	private boolean isWorking = false;
+	private BoardController boardController;
+
+	//TODO: connection should be moved to separate ConnectionController
 	private Socket csSocket;
 
 
@@ -18,6 +24,9 @@ public class Work {
 		this.csPort = csPort;
 		this.numOfPlayers = numOfPlayers;
 		this.csAddress = csAddress;
+
+
+		this.boardController = new BoardController(new BoardDimensions(5, 10, 3));
 	}
 
 	public void run() {
@@ -27,7 +36,7 @@ public class Work {
 
 
 	private void start() {
-		connectWithCs();
+//		connectWithCs(); commented for board debugging
 
 		System.out.println("work starts");
 		isWorking = true;
@@ -43,7 +52,7 @@ public class Work {
 
 	private void doWork() {
 		while (true) {
-			System.out.println("working");
+			boardController.printBoard();
 
 			try {
 				Thread.sleep(2000);
