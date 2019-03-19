@@ -11,7 +11,6 @@ import java.net.Socket;
 public class Work {
 
 	private int csPort;
-	private int numOfPlayers;
 	private String csAddress;
 
 	private boolean isWorking = false;
@@ -22,12 +21,11 @@ public class Work {
 
 
 
-	Work(int csPort, int numOfPlayers, String csAddress, BoardDimensions boardDimensions, BoardField[] goals) {
+	Work(int csPort, int numOfPlayers, String csAddress, BoardDimensions boardDimensions, BoardField[] goals, int numOfPieces) {
 		this.csPort = csPort;
-		this.numOfPlayers = numOfPlayers;
 		this.csAddress = csAddress;
 
-		this.boardController = new BoardController(boardDimensions, goals);
+		this.boardController = new BoardController(boardDimensions, goals, numOfPieces);
 	}
 
 	public void run() {

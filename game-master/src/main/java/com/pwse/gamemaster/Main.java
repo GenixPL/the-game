@@ -39,10 +39,12 @@ public class Main {
 
     private static void startGame(String[] args) {
         System.out.println("GM starts");
-        BoardDimensions dim = getBoardDimensions(args[6]);
-        BoardField[] goals = getGoals(args[6]).toArray(new BoardField[0]);
+        String filePath = args[6];
+        BoardDimensions dim = getBoardDimensions(filePath);
+        BoardField[] goals = getGoals(filePath).toArray(new BoardField[0]);
+        int numOfPieces = getNumberOfPieces(filePath);
 
-        Work work = new Work(csPort, numOfPlayers, csAddress, dim, goals);
+        Work work = new Work(csPort, numOfPlayers, csAddress, dim, goals, numOfPieces);
         work.run();
 
         shutDownGame();
@@ -185,6 +187,12 @@ public class Main {
         }
 
         return goals;
+    }
+
+    private static int getNumberOfPieces(String filePath) {
+        JSONObject file = new JSONObject(getFileContent(filePath));
+
+        return file.getInt("number-of-pieces");
     }
 
     private static String getFileContent(String filePath) {

@@ -22,13 +22,14 @@ public class BoardController {
 
 
 
-	public BoardController(BoardDimensions boardDimensions, BoardField[] goals) {
+	public BoardController(BoardDimensions boardDimensions, BoardField[] goals, int numOfInitialPieces) {
 		this.bDim = boardDimensions;
 
 		this.pieces = new ArrayList<>(0); //TODO: 0 should be changed to passed init value of pieces
 		this.b = new Board(boardDimensions);
 
 		addGoals(goals);
+		addInitPieces(numOfInitialPieces);
 		initPieceSpawning();
 	}
 
@@ -41,6 +42,12 @@ public class BoardController {
 	private void addGoals(BoardField[] goals) {
 		for (BoardField bf : goals) {
 			b.addGoal(bf);
+		}
+	}
+
+	private void addInitPieces(int numOfInitPieces) {
+		for (int i = 0; i < numOfInitPieces; i++) {
+			addRandomPiece();
 		}
 	}
 
