@@ -54,7 +54,7 @@ public class Board {
 			for (int y = 0; y < dim.getHeight(); y++) {
 				if (y < dim.getHeightOfTeamArea()) {
 					//mark red goal area
-					fields[x][y].fieldChar = 'g';
+					fields[x][y].fieldChar = 'g'; //TODO: all of those should be moved to separate functions, not sure which class should be responsible
 					fields[x][y].fieldColor = FieldColors.redTeamColor;
 
 				} else if (y >= (dim.getHeight() - dim.getHeightOfTeamArea())) {

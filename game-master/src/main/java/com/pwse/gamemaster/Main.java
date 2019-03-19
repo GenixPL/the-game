@@ -1,5 +1,7 @@
 package com.pwse.gamemaster;
 
+import com.pwse.gamemaster.models.BoardDimensions;
+import com.pwse.gamemaster.models.BoardField;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -17,7 +19,7 @@ public class Main {
 
 
 
-    public static void main(String[] args) {
+    public static void main(String args[]) {
         if (!isEveryArgCorrect(args)) {
             return;
         }
@@ -26,15 +28,16 @@ public class Main {
         numOfPlayers = getNumOfPlayers(args[6]);
         csAddress = args[2];
 
-        startGame();
+        startGame(args);
     }
 
 
 
-    private static void startGame() {
+    private static void startGame(String args[]) {
         System.out.println("GM starts");
+        BoardDimensions dim = getBoardDimensions(args[6]);
 
-        Work work = new Work(csPort, numOfPlayers, csAddress);
+        Work work = new Work(csPort, numOfPlayers, csAddress, dim);
         work.run();
 
         shutDownGame();
@@ -149,15 +152,31 @@ public class Main {
     }
 
     private static int getNumOfPlayers(String filePath) {
+        JSONObject file = new JSONObject(getFileContent(filePath));
+
+        return file.getInt("number-of-players");
+    }
+
+    private static BoardDimensions getBoardDimensions(String filePath) {
+        JSONObject file = new JSONObject(getFileContent(filePath));
+        JSONObject board = file.getJSONObject("board-dimensions");
+        int w = board.getInt("width");
+        int h = board.getInt("height");
+        int hoga = board.getInt("height-of-goal-area");
+
+        return new BoardDimensions(w, h, hoga);
+    }
+
+    private static String getFileContent(String filePath) {
         String fileContent = null;
         try {
             fileContent = new String(Files.readAllBytes(Paths.get(filePath)));
+
         } catch (IOException e) {
             e.printStackTrace();
+            System.exit(1);
         }
 
-        JSONObject object = new JSONObject(fileContent);
-
-        return object.getInt("number-of-players");
+        return fileContent;
     }
 }

@@ -20,13 +20,12 @@ public class Work {
 
 
 
-	Work(int csPort, int numOfPlayers, String csAddress) {
+	Work(int csPort, int numOfPlayers, String csAddress, BoardDimensions boardDimensions) {
 		this.csPort = csPort;
 		this.numOfPlayers = numOfPlayers;
 		this.csAddress = csAddress;
 
-
-		this.boardController = new BoardController(new BoardDimensions(5, 10, 3));
+		this.boardController = new BoardController(boardDimensions);
 	}
 
 	public void run() {
