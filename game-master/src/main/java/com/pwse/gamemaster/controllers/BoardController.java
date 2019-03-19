@@ -21,12 +21,13 @@ public class BoardController {
 
 
 
-	public BoardController(BoardDimensions boardDimensions) {
+	public BoardController(BoardDimensions boardDimensions, Piece[] startingPieces) {
 		this.bDim = boardDimensions;
 
 		this.pieces = new ArrayList<>(0); //TODO: 0 should be changed to passed init value of pieces
 		this.b = new Board(boardDimensions);
 
+		addStartingPieces(startingPieces);
 		initPieceSpawning();
 	}
 
@@ -35,6 +36,13 @@ public class BoardController {
 	}
 
 
+
+	private void addStartingPieces(Piece[] pieces) {
+		for (Piece p : pieces) {
+			this.pieces.add(p);
+			b.addPiece(p);
+		}
+	}
 
 	private void initPieceSpawning() {
 		TimerTask spawnPiece = new TimerTask() {
@@ -50,6 +58,7 @@ public class BoardController {
 	private void addRandomPiece() {
 		//TODO: it should check if there already isn't any piece at given cords (low priority with small spawning frequency)
 		Piece newPiece = Piece.getRandomInstance(bDim);
+		pieces.add(newPiece);
 		b.addPiece(newPiece);
 	}
 }

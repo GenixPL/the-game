@@ -1,6 +1,8 @@
 package com.pwse.gamemaster;
 
 import com.pwse.gamemaster.models.board.BoardDimensions;
+import com.pwse.gamemaster.models.piece.Piece;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -18,7 +21,7 @@ public class Main {
 
 
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         if (!isEveryArgCorrect(args)) {
             return;
         }
@@ -32,11 +35,12 @@ public class Main {
 
 
 
-    private static void startGame(String args[]) {
+    private static void startGame(String[] args) {
         System.out.println("GM starts");
         BoardDimensions dim = getBoardDimensions(args[6]);
+        Piece pieces[] = getPieces(args[6]).toArray(new Piece[0]);
 
-        Work work = new Work(csPort, numOfPlayers, csAddress, dim);
+        Work work = new Work(csPort, numOfPlayers, csAddress, dim, pieces);
         work.run();
 
         shutDownGame();
@@ -47,7 +51,7 @@ public class Main {
         System.exit(0);
     }
 
-    private static boolean isEveryArgCorrect(String args[]) {
+    private static boolean isEveryArgCorrect(String[] args) {
         if (args.length != 7) {
             informAboutWrongArgsPattern();
             return false;
@@ -164,6 +168,21 @@ public class Main {
         int hoga = board.getInt("height-of-goal-area");
 
         return new BoardDimensions(w, h, hoga);
+    }
+
+    private static ArrayList<Piece> getPieces(String filePath) {
+        JSONObject file = new JSONObject(getFileContent(filePath));
+        JSONArray piecesArr = file.getJSONArray("pieces");
+
+        ArrayList<Piece> pieces = new ArrayList<>(0);
+        for (int i = 0; i < piecesArr.length(); i++) {
+            JSONObject piece = piecesArr.getJSONObject(i);
+            int posX = piece.getInt("x");
+            int posY = piece.getInt("y");
+            pieces.add(Piece.getPositionedInstance(posX, posY));
+        }
+
+        return pieces;
     }
 
     private static String getFileContent(String filePath) {

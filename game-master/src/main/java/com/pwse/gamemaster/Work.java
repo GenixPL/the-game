@@ -2,6 +2,7 @@ package com.pwse.gamemaster;
 
 import com.pwse.gamemaster.controllers.BoardController;
 import com.pwse.gamemaster.models.board.BoardDimensions;
+import com.pwse.gamemaster.models.piece.Piece;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -20,12 +21,12 @@ public class Work {
 
 
 
-	Work(int csPort, int numOfPlayers, String csAddress, BoardDimensions boardDimensions) {
+	Work(int csPort, int numOfPlayers, String csAddress, BoardDimensions boardDimensions, Piece[] startingPieces) {
 		this.csPort = csPort;
 		this.numOfPlayers = numOfPlayers;
 		this.csAddress = csAddress;
 
-		this.boardController = new BoardController(boardDimensions);
+		this.boardController = new BoardController(boardDimensions, startingPieces);
 	}
 
 	public void run() {

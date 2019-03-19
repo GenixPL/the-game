@@ -17,7 +17,7 @@ public class Piece {
 
 	public static Piece getPositionedInstance(int posX, int posY) {
 		Random random = new Random();
-		boolean isSham = random.nextBoolean();
+		boolean isSham = random.nextBoolean(); //TODO:should be change to passed sham probability
 
 		return new Piece(posX, posY, isSham);
 	}
@@ -26,7 +26,7 @@ public class Piece {
 		Random random = new Random();
 		int posX = random.nextInt(dim.getWidth());
 		int posY = random.nextInt(dim.getHeight() - 2 * dim.getHeightOfTeamArea()) + dim.getHeightOfTeamArea();
-		boolean isSham = random.nextBoolean();
+		boolean isSham = random.nextBoolean(); //TODO:should be change to passed sham probability
 
 		return new Piece(posX, posY, isSham);
 	}
