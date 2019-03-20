@@ -1,7 +1,8 @@
 package com.pwse.gamemaster.models.board;
 
+import com.pwse.gamemaster.models.Colors;
+
 public class BoardField {
-	private static final String ANSI_RESET  = "\u001B[0m";
 
 	private boolean isGoal;
 	private int posX;
@@ -20,7 +21,7 @@ public class BoardField {
 	}
 
 	public void print() {
-		System.out.print(fieldColor + fieldStatus + ANSI_RESET);
+		System.out.print(fieldColor + fieldStatus + Colors.ANSI_RESET);
 	}
 
 	public boolean isGoal() {
@@ -51,17 +52,17 @@ public class BoardField {
 
 	public void setAsBackground() {
 		setFieldStatus(FieldStatus.background);
-		fieldColor = FieldColors.background;
+		fieldColor = Colors.background;
 	}
 
 	public void setAsGoal() {
 		setFieldStatus(FieldStatus.goal);
-		fieldColor = FieldColors.goal;
+		fieldColor = Colors.goal;
 	}
 
 	public void setAsPiece() {
 		setFieldStatus(FieldStatus.piece);
-		fieldColor = FieldColors.piece;
+		fieldColor = Colors.piece;
 	}
 
 	public boolean isAvailableForPiece() {

@@ -4,6 +4,8 @@ import com.pwse.gamemaster.models.board.Board;
 import com.pwse.gamemaster.models.board.BoardDimensions;
 import com.pwse.gamemaster.models.board.BoardField;
 import com.pwse.gamemaster.models.piece.Piece;
+import com.pwse.gamemaster.models.player.Player;
+import com.pwse.gamemaster.models.player.Team;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -16,10 +18,13 @@ public class BoardController {
 	private BoardDimensions bDim;
 	private double shamProbability;
 	private int pieceSpawnFrequency;
+	private int numOfPlayers;
 
 	private Board b;
 	private ArrayList<Piece> pieces;
-//	Number of players in each of the team
+	private ArrayList<Player> players;
+	private Team blueTeam;
+	private Team redTeam;
 
 
 
@@ -28,25 +33,45 @@ public class BoardController {
 			BoardField[] goals,
 			int numOfInitialPieces,
 			double shamProbability,
-			int pieceSpawnFrequency
+			int pieceSpawnFrequency,
+			int numOfPlayers
 	) {
 		this.bDim = boardDimensions;
 		this.shamProbability = shamProbability;
 		this.pieceSpawnFrequency = pieceSpawnFrequency;
+		this.numOfPlayers = numOfPlayers;
 
 		this.pieces = new ArrayList<>(numOfInitialPieces);
+		this.players = new ArrayList<>(numOfPlayers);
 		this.b = new Board(boardDimensions);
+		this.blueTeam = new Team(Team.blue);
+		this.redTeam = new Team(Team.red);
 
 		addGoals(goals);
 		addInitPieces(numOfInitialPieces);
+		addPlayers();
 		initPieceSpawning();
 	}
 
 	public void printBoard() {
-		b.print();
+		b.print(players);
 	}
 
 
+	private void addPlayers() {
+		for (int i = 0; i < numOfPlayers; i++) {
+			if (i % 2 == 0) {
+				Player newPlayer = new Player(Team.blue, i, i); //TODO: change position
+				players.add(newPlayer);
+				blueTeam.addPlayer(newPlayer);
+
+			} else {
+				Player newPlayer = new Player(Team.red, i, i); //TODO: change position
+				players.add(newPlayer);
+				redTeam.addPlayer(newPlayer);
+			}
+		}
+	}
 
 	private void addGoals(BoardField[] goals) {
 		for (BoardField bf : goals) {

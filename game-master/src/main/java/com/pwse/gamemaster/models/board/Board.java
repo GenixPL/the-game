@@ -1,6 +1,9 @@
 package com.pwse.gamemaster.models.board;
 
 import com.pwse.gamemaster.models.piece.Piece;
+import com.pwse.gamemaster.models.player.Player;
+
+import java.util.ArrayList;
 
 public class Board {
 	private BoardDimensions dim;
@@ -14,7 +17,7 @@ public class Board {
 		createFields();
 	}
 
-	public void print() {
+	public void print(ArrayList<Player> players) {
 		//make space for readability
 		System.out.println();
 		System.out.println();
@@ -32,13 +35,28 @@ public class Board {
 			//print board itself
 			System.out.print("\t|");
 			for (int x = 0; x < dim.getWidth(); x++) {
-				fields[x][y].print();
+				Player p = getPlayerAtPosition(x, y, players);
+				if (p != null) {
+					p.print();
+				} else {
+					fields[x][y].print();
+				}
 			}
 			System.out.print("|\n");
 		}
 
 		//print bottom line
 		printHorizontalLine();
+	}
+
+	private Player getPlayerAtPosition(int posX, int posY, ArrayList<Player> players) {
+		for (Player p: players) {
+			if (p.getPosX() == posX && p.getPoxY() == posY) {
+				return p;
+			}
+		}
+
+		return null;
 	}
 
 	/* PIECE */

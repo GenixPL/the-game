@@ -33,7 +33,7 @@ public class Work {
 		this.csPort = csPort;
 		this.csAddress = csAddress;
 
-		this.boardController = new BoardController(boardDimensions, goals, numOfPieces, shamProbability, pieceSpawnFrequency);
+		this.boardController = new BoardController(boardDimensions, goals, numOfPieces, shamProbability, pieceSpawnFrequency, numOfPlayers);
 	}
 
 	public void run() {
