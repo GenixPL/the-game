@@ -13,6 +13,7 @@ public class Player {
 	private int posY;
 	private int id;
 	private boolean hasPiece;
+	private int pieceId = -1;
 
 
 
@@ -59,11 +60,12 @@ public class Player {
 		return hasPiece;
 	}
 
-	public void pickPiece() throws TwoPiecesPickedException {
+	public void pickPiece(int pieceId) throws TwoPiecesPickedException {
 		if (hasPiece) {
 			throw new TwoPiecesPickedException();
 		}
 
+		this.pieceId = pieceId;
 		hasPiece = true;
 	}
 
@@ -72,6 +74,11 @@ public class Player {
 			throw new NoPieceToDropException();
 		}
 
+		pieceId = -1;
 		hasPiece = false;
+	}
+
+	public int getPieceId() {
+		return pieceId;
 	}
 }

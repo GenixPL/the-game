@@ -56,9 +56,10 @@ public class WorkController {
 		while (true) {
 			bController.printBoard();
 			bController.movePlayerTo(1, 0, posY++);
+			bController.pickUpPiece(1);
 
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

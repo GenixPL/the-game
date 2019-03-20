@@ -5,6 +5,7 @@ import com.pwse.gamemaster.models.GameData;
 import com.pwse.gamemaster.models.exceptions.CordsOutsideBoardException;
 import com.pwse.gamemaster.models.exceptions.EnemyAreaException;
 import com.pwse.gamemaster.models.exceptions.PlayerPositionException;
+import com.pwse.gamemaster.models.exceptions.TwoPiecesPickedException;
 import com.pwse.gamemaster.models.goal.Goal;
 import com.pwse.gamemaster.models.board.BoardDimensions;
 import com.pwse.gamemaster.models.piece.Piece;
@@ -83,12 +84,45 @@ public class BoardController {
 		//move piece if he has such
 		if (players.get(playerId).hasPiece()) {
 			for (Piece p : pieces) {
-				if (p.getPosX() == posX && p.getPosY() == posY) {
-					p.moveTo(players.get(playerId).getPosX(), players.get(playerId).getPosY());
+				if (p.getId() == players.get(playerId).getPieceId()) {
+					p.moveTo(posX, posY);
+					System.out.println(p.getPosX() + " " + p.getPosY());
 				}
 			}
 		}
 		players.get(playerId).moveTo(posX, posY);
+	}
+
+	public void pickUpPiece(int playerId) {
+		int posX = players.get(playerId).getPosX();
+		int posY = players.get(playerId).getPosY();
+
+		int pieceId = -1;
+		try {
+			pieceId = BoardChecker.isPieceAtPosition(posX, posY, pieces, bDim);
+		} catch (CordsOutsideBoardException e) {
+			//TODO: message
+			return;
+		}
+
+		if (pieceId > 0) {
+			//there is a piece to pick up
+			try {
+				players.get(playerId).pickPiece(pieceId);
+			} catch (TwoPiecesPickedException e) {
+				//TODO: message
+				return;
+			}
+
+		} else {
+			//TODO: message
+			return;
+		}
+	}
+
+	public void dropPiece(int playerId) {
+		//TODO
+		//TODO: can't drop piece if other is at the same position
 	}
 
 

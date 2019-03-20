@@ -28,6 +28,26 @@ public class BoardChecker {
 		return true;
 	}
 
+	public static int isPieceAtPosition(
+			int posX,
+			int posY,
+			ArrayList<Piece> pieces,
+			BoardDimensions dim
+	) throws CordsOutsideBoardException {
+
+		if (!isEveryCordCorrect(posX, posY, dim)) {
+			throw new CordsOutsideBoardException();
+		}
+
+		for (Piece p : pieces) {
+			if (p.getPosX() == posX && p.getPosY() == posY) {
+				return p.getId();
+			}
+		}
+
+		return -1;
+	}
+
 	public static boolean canPlayerMoveTo(
 			int posX,
 			int posY,

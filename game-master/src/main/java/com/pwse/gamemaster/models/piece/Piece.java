@@ -5,14 +5,19 @@ import com.pwse.gamemaster.models.board.BoardDimensions;
 
 import java.util.Random;
 
+
+
 public class Piece {
+
+	/**
+	 * It is used to create piece id, starting from 1 in order to miss default int.
+	 */
+	private static int piecesCount = 1;
+
+	private int id = -1;
 	private int posX;
 	private int posY;
-	private boolean isPicked;
 	private boolean isSham;
-
-	private int prevPosX = -1;
-	private int prevPosY = -1;
 
 
 
@@ -34,20 +39,18 @@ public class Piece {
 
 
 
-	public void moveTo(int posX, int posY) {
-		prevPosX = this.posX;
-		prevPosY = this.posY;
-
+	private Piece(int posX, int posY, boolean isSham) {
+		this.id = piecesCount++;
 		this.posX = posX;
 		this.posY = posY;
+		this.isSham = isSham;
 	}
 
-	public int getPrevPosX() {
-		return prevPosX;
-	}
 
-	public int getPrevPosY() {
-		return prevPosY;
+
+	public void moveTo(int posX, int posY) {
+		this.posX = posX;
+		this.posY = posY;
 	}
 
 	public int getPosX() {
@@ -58,29 +61,15 @@ public class Piece {
 		return posY;
 	}
 
-	public boolean isPicked() {
-		return isPicked;
-	}
-
 	public boolean isSham() {
 		return isSham;
-	}
-
-	public void setPicked(boolean isPicked) {
-		this.isPicked = isPicked;
 	}
 
 	public String getPrintSting() {
 		return Colors.piece + 'p' + Colors.ANSI_RESET;
 	}
 
-
-
-	private Piece(int posX, int posY, boolean isSham) {
-		this.posX = posX;
-		this.posY = posY;
-		this.isPicked = false;
-		this.isSham = isSham;
+	public int getId() {
+		return id;
 	}
-
 }
