@@ -11,21 +11,30 @@ import java.util.TimerTask;
 
 public class BoardController {
 
+	private static final int MAX_NUM_OF_PIECES = 6;
+
 	private BoardDimensions bDim;
+	private double shamProbability;
+	private int pieceSpawnFrequency;
+
 	private Board b;
 	private ArrayList<Piece> pieces;
-//	Probability of piece being a sham
-//	Frequency of placing new pieces on board
-//	Initial number of pieces on board
 //	Number of players in each of the team
-//	goal field's coordinates
 
 
 
-	public BoardController(BoardDimensions boardDimensions, BoardField[] goals, int numOfInitialPieces) {
+	public BoardController(
+			BoardDimensions boardDimensions,
+			BoardField[] goals,
+			int numOfInitialPieces,
+			double shamProbability,
+			int pieceSpawnFrequency
+	) {
 		this.bDim = boardDimensions;
+		this.shamProbability = shamProbability;
+		this.pieceSpawnFrequency = pieceSpawnFrequency;
 
-		this.pieces = new ArrayList<>(0); //TODO: 0 should be changed to passed init value of pieces
+		this.pieces = new ArrayList<>(numOfInitialPieces);
 		this.b = new Board(boardDimensions);
 
 		addGoals(goals);
@@ -59,13 +68,19 @@ public class BoardController {
 			}
 		};
 
-		int time = 10000; //TODO: time should be changed to passed spawn frequency
-		new Timer().scheduleAtFixedRate(spawnPiece, time, time);
+		new Timer().scheduleAtFixedRate(spawnPiece, pieceSpawnFrequency, pieceSpawnFrequency);
 	}
 
 	private void addRandomPiece() {
-		//TODO: it should check if there already isn't any piece at given cords (low priority with small spawning frequency)
-		Piece newPiece = Piece.getRandomInstance(bDim);
+		if (pieces.size() >= MAX_NUM_OF_PIECES) {
+			return;
+		}
+
+		Piece newPiece;
+		do {
+			newPiece = Piece.getRandomInstance(bDim, shamProbability);
+		} while (!b.isPlaceAvailableForPiece(newPiece.getPosX(), newPiece.getPosY()));
+
 		pieces.add(newPiece);
 		b.addPiece(newPiece);
 	}

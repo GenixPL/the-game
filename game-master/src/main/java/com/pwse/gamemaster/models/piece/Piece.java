@@ -15,18 +15,18 @@ public class Piece {
 
 
 
-	public static Piece getPositionedInstance(int posX, int posY) {
+	public static Piece getPositionedInstance(int posX, int posY, double shamProbability) {
 		Random random = new Random();
-		boolean isSham = random.nextBoolean(); //TODO:should be change to passed sham probability
+		boolean isSham = (random.nextFloat() < shamProbability);
 
 		return new Piece(posX, posY, isSham);
 	}
 
-	public static Piece getRandomInstance(BoardDimensions dim) {
+	public static Piece getRandomInstance(BoardDimensions dim, double shamProbability) {
 		Random random = new Random();
 		int posX = random.nextInt(dim.getWidth());
 		int posY = random.nextInt(dim.getHeight() - 2 * dim.getHeightOfTeamArea()) + dim.getHeightOfTeamArea();
-		boolean isSham = random.nextBoolean(); //TODO:should be change to passed sham probability
+		boolean isSham = (random.nextFloat() < shamProbability);
 
 		return new Piece(posX, posY, isSham);
 	}

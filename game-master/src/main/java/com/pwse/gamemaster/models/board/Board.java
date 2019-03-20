@@ -61,6 +61,24 @@ public class Board {
 		setFieldAsPiece(piece.getPosX(), piece.getPosY());
 	}
 
+	public boolean isPlaceAvailableForPiece(int posX, int posY) {
+		char currentStatus = fields[posX][posY].fieldChar;
+
+		if (currentStatus == 'b') {
+			return true;
+		}
+
+		if (currentStatus == 'g') {
+			return false;
+		}
+
+		if (currentStatus == 'p') {
+			return false;
+		}
+
+		return true; //shouldn't come here
+	}
+
 	/* GOAL */
 	public void addGoal(BoardField bf) {
 		fields[bf.getPosX()][bf.getPosY()] = bf;

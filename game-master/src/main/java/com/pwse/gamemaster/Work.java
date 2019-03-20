@@ -21,11 +21,19 @@ public class Work {
 
 
 
-	Work(int csPort, int numOfPlayers, String csAddress, BoardDimensions boardDimensions, BoardField[] goals, int numOfPieces) {
+	Work(int csPort,
+	     int numOfPlayers,
+	     String csAddress,
+	     BoardDimensions boardDimensions,
+	     BoardField[] goals,
+	     int numOfPieces,
+	     double shamProbability,
+	     int pieceSpawnFrequency
+	) {
 		this.csPort = csPort;
 		this.csAddress = csAddress;
 
-		this.boardController = new BoardController(boardDimensions, goals, numOfPieces);
+		this.boardController = new BoardController(boardDimensions, goals, numOfPieces, shamProbability, pieceSpawnFrequency);
 	}
 
 	public void run() {
