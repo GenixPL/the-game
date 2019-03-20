@@ -55,9 +55,7 @@ public class WorkController {
 		int posY = 0;
 		while (true) {
 			bController.printBoard();
-			if (!bController.movePlayerTo(1, 0, posY++)) {
-				System.err.println("wrong move");
-			}
+			bController.movePlayerTo(1, 0, posY++);
 
 			try {
 				Thread.sleep(2000);

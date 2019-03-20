@@ -63,18 +63,21 @@ public class BoardController {
 		BoardPrinter.print(bDim, players, pieces, goals);
 	}
 
-	public boolean movePlayerTo(int playerId, int posX, int posY) {
+	public void movePlayerTo(int playerId, int posX, int posY) {
 		try {
 			BoardChecker.canPlayerMoveTo(posX, posY, players.get(playerId), bDim, players);
 
 		} catch (CordsOutsideBoardException e) {
 			//TODO: send message
+			return;
 
 		} catch (EnemyAreaException e) {
 			//TODO: send message
+			return;
 
 		} catch (PlayerPositionException e) {
 			//TODO: send message
+			return;
 		}
 
 		//move piece if he has such
@@ -86,8 +89,6 @@ public class BoardController {
 			}
 		}
 		players.get(playerId).moveTo(posX, posY);
-
-		return  true;
 	}
 
 
