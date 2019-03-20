@@ -1,9 +1,10 @@
 package com.pwse.gamemaster;
 
-import com.pwse.gamemaster.models.board.Board;
+import com.pwse.gamemaster.controllers.WorkController;
+import com.pwse.gamemaster.models.ConnectionData;
+import com.pwse.gamemaster.models.GameData;
 import com.pwse.gamemaster.models.board.BoardDimensions;
 import com.pwse.gamemaster.models.board.BoardField;
-import com.pwse.gamemaster.models.piece.Piece;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,9 +18,6 @@ import java.util.ArrayList;
 public class Main {
 
 	private static final String ARGS_PATTERN = "[current year]-[group id]-gm --address [server address] --port [port number] --conf [path to config file]";
-	private static int csPort;
-	private static int numOfPlayers;
-	private static String csAddress;
 
 
 
@@ -28,33 +26,16 @@ public class Main {
 			return;
 		}
 
-		csPort = Integer.parseInt(args[4]);
-		numOfPlayers = getNumOfPlayers(args[6]);
-		csAddress = args[2];
-
 		startGame(args);
 	}
 
 
 
 	private static void startGame(String[] args) {
-		System.out.println("GM starts");
 		String filePath = args[6];
-		BoardDimensions dim = getBoardDimensions(filePath);
-		BoardField[] goals = getGoals(filePath).toArray(new BoardField[0]);
-		int numOfPieces = getNumberOfPieces(filePath);
-		double shamProbability = getShamProbability(filePath);
-		int pieceSpawnFrequency = getPieceSpawnFrequency(filePath);
 
-		Work work = new Work(csPort, numOfPlayers, csAddress, dim, goals, numOfPieces, shamProbability, pieceSpawnFrequency);
+		WorkController work = new WorkController(getConnectionData(args), getGameData(filePath));
 		work.run();
-
-		shutDownGame();
-	}
-
-	private static void shutDownGame() {
-		System.out.println("GM shuts down");
-		System.exit(0);
 	}
 
 	private static boolean isEveryArgCorrect(String[] args) {
@@ -160,10 +141,25 @@ public class Main {
 		return true;
 	}
 
-	private static int getNumOfPlayers(String filePath) {
+
+	private static ConnectionData getConnectionData(String[] args) {
+		int port = Integer.parseInt(args[4]);
+		String address = args[2];
+
+		return new ConnectionData(port, address);
+	}
+
+	private static GameData getGameData(String filePath) {
 		JSONObject file = new JSONObject(getFileContent(filePath));
 
-		return file.getInt("number-of-players");
+		return new GameData(
+				file.getInt("number-of-players"),
+				file.getInt("number-of-pieces"),
+				file.getDouble("probability-of-sham"),
+				file.getInt("piece-spawn-frequency"),
+				getBoardDimensions(filePath),
+				getGoals(filePath)
+		);
 	}
 
 	private static BoardDimensions getBoardDimensions(String filePath) {
@@ -176,7 +172,7 @@ public class Main {
 		return new BoardDimensions(w, h, hoga);
 	}
 
-	private static ArrayList<BoardField> getGoals(String filePath) {
+	private static BoardField[] getGoals(String filePath) {
 		JSONObject file = new JSONObject(getFileContent(filePath));
 		JSONArray goalsArr = file.getJSONArray("goals");
 
@@ -188,25 +184,7 @@ public class Main {
 			goals.add(new BoardField(posX, posY, true));
 		}
 
-		return goals;
-	}
-
-	private static int getNumberOfPieces(String filePath) {
-		JSONObject file = new JSONObject(getFileContent(filePath));
-
-		return file.getInt("number-of-pieces");
-	}
-
-	private static double getShamProbability(String filePath) {
-		JSONObject file = new JSONObject(getFileContent(filePath));
-
-		return file.getDouble("probability-of-sham");
-	}
-
-	private static int getPieceSpawnFrequency(String filePath) {
-		JSONObject file = new JSONObject(getFileContent(filePath));
-
-		return file.getInt("piece-spawn-frequency");
+		return goals.toArray(new BoardField[0]);
 	}
 
 	private static String getFileContent(String filePath) {
