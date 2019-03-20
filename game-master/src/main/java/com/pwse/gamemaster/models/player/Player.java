@@ -1,6 +1,8 @@
 package com.pwse.gamemaster.models.player;
 
 import com.pwse.gamemaster.models.Colors;
+import com.pwse.gamemaster.models.exceptions.NoPieceToDropException;
+import com.pwse.gamemaster.models.exceptions.TwoPiecesPickedException;
 
 
 public class Player {
@@ -9,6 +11,7 @@ public class Player {
 	private int posX;
 	private int posY;
 	private int id;
+	private boolean hasPiece;
 
 
 
@@ -51,5 +54,21 @@ public class Player {
 	public void moveTo(int posX, int posY) {
 		this.posX = posX;
 		this.posY = posY;
+	}
+
+	public void pickPiece() throws TwoPiecesPickedException {
+		if (hasPiece) {
+			throw new TwoPiecesPickedException();
+		}
+
+		hasPiece = true;
+	}
+
+	public void dropPiece() throws NoPieceToDropException {
+		if (!hasPiece) {
+			throw new NoPieceToDropException();
+		}
+
+		hasPiece = false;
 	}
 }

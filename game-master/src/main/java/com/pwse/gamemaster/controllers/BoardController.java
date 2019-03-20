@@ -84,9 +84,9 @@ public class BoardController {
 			}
 		}
 
-		//check if he doesn't collide with others
-		//TODO:
+		//TODO: check if he doesn't collide with others
 
+		//TODO: move piece with player if he has one
 		players.get(playerId).moveTo(posX, posY);
 
 		return  true;
