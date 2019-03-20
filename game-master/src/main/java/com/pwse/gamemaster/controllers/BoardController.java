@@ -2,6 +2,9 @@ package com.pwse.gamemaster.controllers;
 
 import com.pwse.gamemaster.controllers.helpers.BoardChecker;
 import com.pwse.gamemaster.models.GameData;
+import com.pwse.gamemaster.models.exceptions.CordsOutsideBoardException;
+import com.pwse.gamemaster.models.exceptions.EnemyAreaException;
+import com.pwse.gamemaster.models.exceptions.PlayerPositionException;
 import com.pwse.gamemaster.models.goal.Goal;
 import com.pwse.gamemaster.models.board.BoardDimensions;
 import com.pwse.gamemaster.models.piece.Piece;
@@ -61,27 +64,27 @@ public class BoardController {
 	}
 
 	public boolean movePlayerTo(int playerId, int posX, int posY) {
-		//TODO: instead of boolean throw different exceptions representing situation
-		//check if x and y are in bounds of board
-		if (!isEveryCordCorrect(posX, posY)) {
-			return false;
+		try {
+			BoardChecker.canPlayerMoveTo(posX, posY, players.get(playerId), bDim, players);
+
+		} catch (CordsOutsideBoardException e) {
+			//TODO: send message
+
+		} catch (EnemyAreaException e) {
+			//TODO: send message
+
+		} catch (PlayerPositionException e) {
+			//TODO: send message
 		}
 
-		//check if he doesn't go to enemy's goal area
-		String color = players.get(playerId).getTeamColor();
-		if (color.equals(TeamColor.red)) {
-			if (posY >= (bDim.getHeight() - bDim.getHeightOfTeamArea() - 1)) {
-				return false;
-			}
-		} else {
-			if (posY <= (bDim.getHeightOfTeamArea() - 1)) {
-				return false;
+		//move piece if he has such
+		if (players.get(playerId).hasPiece()) {
+			for (Piece p : pieces) {
+				if (p.getPosX() == posX && p.getPosY() == posY) {
+					p.moveTo(players.get(playerId).getPosX(), players.get(playerId).getPosY());
+				}
 			}
 		}
-
-		//TODO: check if he doesn't collide with others
-
-		//TODO: move piece with player if he has one
 		players.get(playerId).moveTo(posX, posY);
 
 		return  true;
@@ -134,15 +137,4 @@ public class BoardController {
 		pieces.add(newPiece);
 	}
 
-	private boolean isEveryCordCorrect(int posX, int posY) {
-		if (posX < 0 || posX >= bDim.getWidth()) {
-			return false;
-		}
-
-		if (posY < 0 || posY >= bDim.getHeight()) {
-			return false;
-		}
-
-		return true;
-	}
 }

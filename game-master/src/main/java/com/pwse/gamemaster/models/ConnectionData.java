@@ -1,10 +1,12 @@
 package com.pwse.gamemaster.models;
 
 
+
 /**
  * This class encapsulates connection data (no fckn way)
  */
 public class ConnectionData {
+
 	private int port;
 	private String address;
 

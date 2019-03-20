@@ -3,7 +3,6 @@ package com.pwse.gamemaster.controllers;
 import com.pwse.gamemaster.models.ConnectionData;
 import com.pwse.gamemaster.models.GameData;
 import com.pwse.gamemaster.models.exceptions.CloseConnectionFailException;
-import com.pwse.gamemaster.models.exceptions.OpenConnectionFailException;
 
 
 

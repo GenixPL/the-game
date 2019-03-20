@@ -1,6 +1,7 @@
 package com.pwse.gamemaster.models;
 
 
+
 /**
  * This class represents colors in which different things are printed out
  * See <a href="https://dev.to/awwsmm/coloured-terminal-output-with-java-57l3">doc</a>()

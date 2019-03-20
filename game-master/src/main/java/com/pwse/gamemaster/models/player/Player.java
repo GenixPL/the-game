@@ -55,6 +55,10 @@ public class Player {
 		this.posY = posY;
 	}
 
+	public boolean hasPiece() {
+		return hasPiece;
+	}
+
 	public void pickPiece() throws TwoPiecesPickedException {
 		if (hasPiece) {
 			throw new TwoPiecesPickedException();
