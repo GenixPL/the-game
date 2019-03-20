@@ -7,7 +7,8 @@ public class BoardField {
 	private int posX;
 	private int posY;
 
-	public char fieldChar;
+	private char fieldStatus;
+	private char prevFieldStatus;
 	public String fieldColor;
 
 
@@ -19,7 +20,7 @@ public class BoardField {
 	}
 
 	public void print() {
-		System.out.print(fieldColor + fieldChar + ANSI_RESET);
+		System.out.print(fieldColor + fieldStatus + ANSI_RESET);
 	}
 
 	public boolean isGoal() {
@@ -32,5 +33,50 @@ public class BoardField {
 
 	public int getPosY() {
 		return posY;
+	}
+
+	/* !!! should be used everywhere !!! */
+	public char getFieldStatus() {
+		return fieldStatus;
+	}
+
+	public void setFieldStatus(char fieldStatus) {
+		this.prevFieldStatus = this.fieldStatus;
+		this.fieldStatus = fieldStatus;
+	}
+
+	public char getPrevFieldStatus() {
+		return prevFieldStatus;
+	}
+
+	public void setAsBackground() {
+		setFieldStatus(FieldStatus.background);
+		fieldColor = FieldColors.background;
+	}
+
+	public void setAsGoal() {
+		setFieldStatus(FieldStatus.goal);
+		fieldColor = FieldColors.goal;
+	}
+
+	public void setAsPiece() {
+		setFieldStatus(FieldStatus.piece);
+		fieldColor = FieldColors.piece;
+	}
+
+	public boolean isAvailableForPiece() {
+		if (getFieldStatus() == FieldStatus.background) {
+			return true;
+		}
+
+		if (getFieldStatus() == FieldStatus.goal) {
+			return false;
+		}
+
+		if (getFieldStatus() == FieldStatus.piece) {
+			return false;
+		}
+
+		return false; //shouldn't come so far
 	}
 }

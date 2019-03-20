@@ -50,7 +50,7 @@ public class BoardController {
 
 	private void addGoals(BoardField[] goals) {
 		for (BoardField bf : goals) {
-			b.addGoal(bf);
+			b.addGoal(bf.getPosX(), bf.getPosY());
 		}
 	}
 

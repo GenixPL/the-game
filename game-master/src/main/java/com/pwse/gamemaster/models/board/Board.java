@@ -43,7 +43,7 @@ public class Board {
 
 	/* PIECE */
 	public void addPiece(Piece piece) {
-		setFieldAsPiece(piece.getPosX(), piece.getPosY());
+		fields[piece.getPosX()][piece.getPosY()].setAsPiece();
 	}
 
 	/**
@@ -57,37 +57,20 @@ public class Board {
 			throw new Exception("Moving piece without previous positions");
 		}
 
-		setFieldAsBackground(piece.getPrevPosX(), piece.getPrevPosY());
-		setFieldAsPiece(piece.getPosX(), piece.getPosY());
+		fields[piece.getPrevPosX()][piece.getPrevPosY()].setAsBackground();
+		fields[piece.getPosX()][piece.getPosY()].setAsPiece();
 	}
 
 	public boolean isPlaceAvailableForPiece(int posX, int posY) {
-		char currentStatus = fields[posX][posY].fieldChar;
-
-		if (currentStatus == 'b') {
-			return true;
-		}
-
-		if (currentStatus == 'g') {
-			return false;
-		}
-
-		if (currentStatus == 'p') {
-			return false;
-		}
-
-		return true; //shouldn't come here
+		return fields[posX][posY].isAvailableForPiece();
 	}
 
-	/* GOAL */
-	public void addGoal(BoardField bf) {
-		fields[bf.getPosX()][bf.getPosY()] = bf;
-		setFieldAsGoal(bf.getPosX(), bf.getPosY());
+	public void addGoal(int posX, int posY) {
+		fields[posX][posY].setAsGoal();
 	}
 
-	public void removeGoal(BoardField bf) {
-		fields[bf.getPosX()][bf.getPosY()] = bf;
-		setFieldAsBackground(bf.getPosX(), bf.getPosY());
+	public void removeGoal(int posX, int posY) {
+		fields[posX][posY].setAsBackground();
 	}
 
 
@@ -100,35 +83,14 @@ public class Board {
 		System.out.print("|\n");
 	}
 
-	/* FIELD */
-	/**
-	 * b - background
-	 * g - goal
-	 * p - piece
-	 */
 	private void createFields() {
 		fields = new BoardField[dim.getWidth()][dim.getHeight()];
 
 		for (int x = 0; x < dim.getWidth(); x++) {
 			for (int y = 0; y < dim.getHeight(); y++) {
 				fields[x][y] = new BoardField(x, y, false);
-				setFieldAsBackground(x, y);
+				fields[x][y].setAsBackground();
 			}
 		}
-	}
-
-	private void setFieldAsBackground(int posX, int posY) {
-		fields[posX][posY].fieldChar = 'b';
-		fields[posX][posY].fieldColor = FieldColors.backgroundColor;
-	}
-
-	private void setFieldAsPiece(int posX, int posY) {
-		fields[posX][posY].fieldChar = 'p';
-		fields[posX][posY].fieldColor = FieldColors.pieceColor;
-	}
-
-	private void setFieldAsGoal(int posX, int posY) {
-		fields[posX][posY].fieldChar = 'g';
-		fields[posX][posY].fieldColor = FieldColors.goalColor;
 	}
 }
