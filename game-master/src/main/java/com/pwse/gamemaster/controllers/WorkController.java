@@ -28,11 +28,12 @@ public class WorkController {
 
 
 	private void start() {
-		try {
-			cController.connect();
-		} catch (OpenConnectionFailException e) {
-			System.exit(-1);
-		}
+		//TODO: uncomment
+//		try {
+//			cController.connect();
+//		} catch (OpenConnectionFailException e) {
+//			System.exit(-1);
+//		}
 
 		System.out.println(TAG + "starting work");
 		doWork();

@@ -1,5 +1,6 @@
 package com.pwse.gamemaster.controllers;
 
+import com.pwse.gamemaster.controllers.helpers.BoardChecker;
 import com.pwse.gamemaster.models.GameData;
 import com.pwse.gamemaster.models.goal.Goal;
 import com.pwse.gamemaster.models.board.BoardDimensions;
@@ -128,10 +129,9 @@ public class BoardController {
 		Piece newPiece;
 		do {
 			newPiece = Piece.getRandomInstance(bDim, shamProbability);
-		} while (!b.isPlaceAvailableForPiece(newPiece.getPosX(), newPiece.getPosY()));
+		} while (!BoardChecker.isPlaceAvailableForPiece(newPiece.getPosX(), newPiece.getPosY(), pieces));
 
 		pieces.add(newPiece);
-		b.addPiece(newPiece);
 	}
 
 	private boolean isEveryCordCorrect(int posX, int posY) {
