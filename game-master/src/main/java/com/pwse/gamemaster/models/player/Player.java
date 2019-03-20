@@ -3,6 +3,7 @@ package com.pwse.gamemaster.models.player;
 import com.pwse.gamemaster.models.Colors;
 import com.pwse.gamemaster.models.exceptions.NoPieceToDropException;
 import com.pwse.gamemaster.models.exceptions.TwoPiecesPickedException;
+import com.pwse.gamemaster.models.team.TeamColor;
 
 
 public class Player {
@@ -33,17 +34,15 @@ public class Player {
 		return id;
 	}
 
-	public void print() {
+	public String getPrintString() {
 		if (teamColor.equals(TeamColor.blue)) {
-			System.out.print(Colors.blueTeam + "P" + Colors.ANSI_RESET);
+			return Colors.blueTeam + 'P' + Colors.ANSI_RESET;
 
 		} else if (teamColor.equals(TeamColor.red)) {
-			System.out.print(Colors.redTeam + "P" + Colors.ANSI_RESET);
+			return Colors.redTeam + 'P' + Colors.ANSI_RESET;
 
 		} else {
-			System.out.println();
-			System.err.println("WTF wrong team color");
-			System.out.println();
+			return Colors.error + ' ' + Colors.ANSI_RESET;
 		}
 	}
 

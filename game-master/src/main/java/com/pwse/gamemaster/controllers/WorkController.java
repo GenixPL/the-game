@@ -2,8 +2,6 @@ package com.pwse.gamemaster.controllers;
 
 import com.pwse.gamemaster.models.ConnectionData;
 import com.pwse.gamemaster.models.GameData;
-import com.pwse.gamemaster.models.board.BoardDimensions;
-import com.pwse.gamemaster.models.board.BoardField;
 import com.pwse.gamemaster.models.exceptions.CloseConnectionFailException;
 import com.pwse.gamemaster.models.exceptions.OpenConnectionFailException;
 
@@ -20,14 +18,7 @@ public class WorkController {
 
 	public WorkController(ConnectionData connectionData, GameData gameData) {
 		this.cController = new ConnectionController(connectionData);
-		this.bController = new BoardController(
-				gameData.getBoardDimensions(),
-				gameData.getGoals(),
-				gameData.getInitNumOfPieces(),
-				gameData.getShamProbability(),
-				gameData.getPieceSpawnFrequency(),
-				gameData.getNumOfPlayers()
-		);
+		this.bController = new BoardController(gameData);
 	}
 
 	public void run() {
@@ -60,6 +51,7 @@ public class WorkController {
 	}
 
 	private void doWork() {
+		//TODO
 		int posY = 0;
 		while (true) {
 			bController.printBoard();

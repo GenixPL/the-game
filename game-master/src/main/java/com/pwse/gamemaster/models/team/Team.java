@@ -1,4 +1,6 @@
-package com.pwse.gamemaster.models.player;
+package com.pwse.gamemaster.models.team;
+
+import com.pwse.gamemaster.models.player.Player;
 
 import java.util.ArrayList;
 

@@ -1,12 +1,13 @@
 package com.pwse.gamemaster.controllers;
 
-import com.pwse.gamemaster.models.board.Board;
+import com.pwse.gamemaster.models.GameData;
+import com.pwse.gamemaster.models.goal.Goal;
 import com.pwse.gamemaster.models.board.BoardDimensions;
-import com.pwse.gamemaster.models.board.BoardField;
 import com.pwse.gamemaster.models.piece.Piece;
 import com.pwse.gamemaster.models.player.Player;
-import com.pwse.gamemaster.models.player.Team;
-import com.pwse.gamemaster.models.player.TeamColor;
+import com.pwse.gamemaster.models.team.Team;
+import com.pwse.gamemaster.models.team.TeamColor;
+import com.pwse.gamemaster.view.BoardPrinter;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -25,44 +26,37 @@ public class BoardController {
 	private int pieceSpawnFrequency;
 	private int numOfPlayers;
 
-	private Board b;
-	private ArrayList<Piece> pieces;
 	/**
 	 * Player id equals player's position in array
 	 */
 	private ArrayList<Player> players;
+	private ArrayList<Piece> pieces;
+	private ArrayList<Goal> goals;
 	private Team blueTeam;
 	private Team redTeam;
 
 
 
-	public BoardController(
-			BoardDimensions boardDimensions,
-			BoardField[] goals,
-			int numOfInitialPieces,
-			double shamProbability,
-			int pieceSpawnFrequency,
-			int numOfPlayers
-	) {
-		this.bDim = boardDimensions;
-		this.shamProbability = shamProbability;
-		this.pieceSpawnFrequency = pieceSpawnFrequency;
-		this.numOfPlayers = numOfPlayers;
+	public BoardController(GameData gameData) {
+		this.bDim = gameData.getBoardDimensions();
+		this.shamProbability = gameData.getShamProbability();
+		this.pieceSpawnFrequency = gameData.getPieceSpawnFrequency();
+		this.numOfPlayers = gameData.getNumOfPlayers();
 
-		this.pieces = new ArrayList<>(numOfInitialPieces);
 		this.players = new ArrayList<>(numOfPlayers);
-		this.b = new Board(boardDimensions);
+		this.pieces = new ArrayList<>(gameData.getInitNumOfPieces());
+		this.goals = new ArrayList<>(gameData.getGoals());
 		this.blueTeam = new Team(TeamColor.blue);
 		this.redTeam = new Team(TeamColor.red);
 
-		addGoals(goals);
-		addInitPieces(numOfInitialPieces);
 		addPlayers();
+		addInitPieces(gameData.getInitNumOfPieces());
+
 		initPieceSpawning();
 	}
 
 	public void printBoard() {
-		b.print(players);
+		BoardPrinter.print(bDim, players, pieces, goals);
 	}
 
 	public boolean movePlayerTo(int playerId, int posX, int posY) {
@@ -92,18 +86,6 @@ public class BoardController {
 		return  true;
 	}
 
-	private boolean isEveryCordCorrect(int posX, int posY) {
-		if (posX < 0 || posX >= bDim.getWidth()) {
-			return false;
-		}
-
-		if (posY < 0 || posY >= bDim.getHeight()) {
-			return false;
-		}
-
-		return true;
-	}
-
 
 
 	private void addPlayers() { //TODO: this will be change due to the algo in which players are distributed
@@ -118,12 +100,6 @@ public class BoardController {
 				players.add(newPlayer);
 				redTeam.addPlayer(newPlayer);
 			}
-		}
-	}
-
-	private void addGoals(BoardField[] goals) {
-		for (BoardField bf : goals) {
-			b.addGoal(bf.getPosX(), bf.getPosY());
 		}
 	}
 
@@ -156,5 +132,17 @@ public class BoardController {
 
 		pieces.add(newPiece);
 		b.addPiece(newPiece);
+	}
+
+	private boolean isEveryCordCorrect(int posX, int posY) {
+		if (posX < 0 || posX >= bDim.getWidth()) {
+			return false;
+		}
+
+		if (posY < 0 || posY >= bDim.getHeight()) {
+			return false;
+		}
+
+		return true;
 	}
 }

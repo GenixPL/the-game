@@ -3,8 +3,8 @@ package com.pwse.gamemaster;
 import com.pwse.gamemaster.controllers.WorkController;
 import com.pwse.gamemaster.models.ConnectionData;
 import com.pwse.gamemaster.models.GameData;
+import com.pwse.gamemaster.models.goal.Goal;
 import com.pwse.gamemaster.models.board.BoardDimensions;
-import com.pwse.gamemaster.models.board.BoardField;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -172,19 +172,19 @@ public class Main {
 		return new BoardDimensions(w, h, hoga);
 	}
 
-	private static BoardField[] getGoals(String filePath) {
+	private static ArrayList<Goal> getGoals(String filePath) {
 		JSONObject file = new JSONObject(getFileContent(filePath));
 		JSONArray goalsArr = file.getJSONArray("goals");
 
-		ArrayList<BoardField> goals = new ArrayList<>(0);
+		ArrayList<Goal> goals = new ArrayList<>(0);
 		for (int i = 0; i < goalsArr.length(); i++) {
 			JSONObject piece = goalsArr.getJSONObject(i);
 			int posX = piece.getInt("x");
 			int posY = piece.getInt("y");
-			goals.add(new BoardField(posX, posY, true));
+			goals.add(new Goal(posX, posY));
 		}
 
-		return goals.toArray(new BoardField[0]);
+		return goals;
 	}
 
 	private static String getFileContent(String filePath) {

@@ -2,7 +2,9 @@ package com.pwse.gamemaster.models;
 
 
 import com.pwse.gamemaster.models.board.BoardDimensions;
-import com.pwse.gamemaster.models.board.BoardField;
+import com.pwse.gamemaster.models.goal.Goal;
+
+import java.util.ArrayList;
 
 /**
  * This class encapsulates game data (no fckn way)
@@ -14,7 +16,7 @@ public class GameData {
 	private double shamProbability;
 	private int pieceSpawnFrequency;
 	private BoardDimensions boardDimensions;
-	private BoardField[] goals;
+	private ArrayList<Goal> goals;
 
 
 
@@ -24,7 +26,7 @@ public class GameData {
 			double shamProbability,
 			int pieceSpawnFrequency,
 			BoardDimensions boardDimensions,
-			BoardField[] goals
+			ArrayList<Goal> goals
 	) {
 		this.numOfPlayers = numOfPlayers;
 		this.initNumOfPieces = initNumOfPieces;
@@ -54,7 +56,7 @@ public class GameData {
 		return boardDimensions;
 	}
 
-	public BoardField[] getGoals() {
+	public ArrayList<Goal> getGoals() {
 		return goals;
 	}
 }

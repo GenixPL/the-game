@@ -1,4 +1,4 @@
-package com.pwse.gamemaster.models.player;
+package com.pwse.gamemaster.models.team;
 
 
 /**

@@ -1,5 +1,6 @@
 package com.pwse.gamemaster.models.piece;
 
+import com.pwse.gamemaster.models.Colors;
 import com.pwse.gamemaster.models.board.BoardDimensions;
 
 import java.util.Random;
@@ -67,6 +68,10 @@ public class Piece {
 
 	public void setPicked(boolean isPicked) {
 		this.isPicked = isPicked;
+	}
+
+	public String getPrintSting() {
+		return Colors.piece + 'p' + Colors.ANSI_RESET;
 	}
 
 
