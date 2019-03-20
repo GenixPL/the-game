@@ -82,6 +82,8 @@ public class BoardChecker {
 			}
 		}
 
+		//TODO: check if new location is one step from current
+
 		return true;
 	}
 

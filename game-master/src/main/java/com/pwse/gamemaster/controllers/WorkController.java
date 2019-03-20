@@ -52,14 +52,20 @@ public class WorkController {
 
 	private void doWork() {
 		//TODO
-		int posY = 0;
-		while (true) {
-			bController.printBoard();
-			bController.movePlayerTo(1, 0, posY++);
+		int i = 0;
+		while (!bController.isGameEnded()) {
+			if (i < 12) {
+				bController.movePlayerTo(1, 0, i++); //move down
+			} else {
+				bController.movePlayerTo(1, 0, (30 - i++)); //move up
+			}
+			bController.dropPiece(1);
 			bController.pickUpPiece(1);
 
+			bController.printBoard();
+
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

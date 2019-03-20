@@ -8,6 +8,7 @@ public class Team {
 
 	private String color;
 	private ArrayList<Player> players;
+	private int score;
 
 
 
@@ -15,6 +16,7 @@ public class Team {
 		this.color = color;
 
 		this.players = new ArrayList<>(0);
+		this.score = 0;
 	}
 
 	public String getColor() {
@@ -27,5 +29,13 @@ public class Team {
 
 	public int getNumOfPlayers() {
 		return players.size();
+	}
+
+	public void addPoint() {
+		score++;
+	}
+
+	public int getScore() {
+		return score;
 	}
 }

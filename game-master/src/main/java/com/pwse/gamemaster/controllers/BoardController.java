@@ -39,6 +39,7 @@ public class BoardController {
 	private ArrayList<Goal> goals;
 	private Team blueTeam;
 	private Team redTeam;
+	private boolean isGameEnded;
 
 
 
@@ -53,11 +54,16 @@ public class BoardController {
 		this.goals = new ArrayList<>(gameData.getGoals());
 		this.blueTeam = new Team(TeamColor.blue);
 		this.redTeam = new Team(TeamColor.red);
+		this.isGameEnded = false;
 
 		addPlayers();
 		addInitPieces(gameData.getInitNumOfPieces());
 
 		initPieceSpawning();
+	}
+
+	public boolean isGameEnded() {
+		return isGameEnded;
 	}
 
 	public void printBoard() {
@@ -86,7 +92,6 @@ public class BoardController {
 			for (Piece p : pieces) {
 				if (p.getId() == players.get(playerId).getPieceId()) {
 					p.moveTo(posX, posY);
-					System.out.println(p.getPosX() + " " + p.getPosY());
 				}
 			}
 		}
@@ -123,6 +128,18 @@ public class BoardController {
 	public void dropPiece(int playerId) {
 		//TODO
 		//TODO: can't drop piece if other is at the same position
+		//simple implementation must be changed
+		for (Goal g : goals) {
+			if (g.getPosX() == players.get(playerId).getPosX() && g.getPosY() == players.get(playerId).getPosY() && players.get(playerId).hasPiece()) {
+				if (players.get(playerId).getTeamColor().equals(TeamColor.red)) {
+					redTeam.addPoint();
+				} else {
+					blueTeam.addPoint();
+				}
+			}
+		}
+
+		checkScores();
 	}
 
 
@@ -172,4 +189,15 @@ public class BoardController {
 		pieces.add(newPiece);
 	}
 
+	private void checkScores() {
+		if (redTeam.getScore() == 1) {
+			System.out.println("=== RED TEAM WON ===");
+			isGameEnded = true;
+		}
+
+		if (blueTeam.getScore() == 1) {
+			System.out.println("=== BLUE TEAM WON ===");
+			isGameEnded = true;
+		}
+	}
 }
