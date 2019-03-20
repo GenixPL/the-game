@@ -58,8 +58,12 @@ public class Work {
 	}
 
 	private void doWork() {
+		int posY = 0;
 		while (true) {
 			boardController.printBoard();
+			if (!boardController.movePlayerTo(1, 0, posY++)) {
+				System.err.println("wrong move");
+			}
 
 			try {
 				Thread.sleep(2000);

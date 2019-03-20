@@ -2,33 +2,39 @@ package com.pwse.gamemaster.models.player;
 
 import com.pwse.gamemaster.models.Colors;
 
+
 public class Player {
 
 	private String teamColor;
 	private int posX;
-	private int poxY;
+	private int posY;
+	private int id;
 
 
 
-	public Player(String teamColor, int posX, int posY) {
+	public Player(int id, String teamColor, int posX, int posY) {
 		this.teamColor = teamColor;
 		this.posX = posX;
-		this.poxY = posY;
+		this.posY = posY;
 	}
 
-	public int getPoxY() {
-		return poxY;
+	public int getPosY() {
+		return posY;
 	}
 
 	public int getPosX() {
 		return posX;
 	}
 
+	public int getId() {
+		return id;
+	}
+
 	public void print() {
-		if (teamColor.equals(Team.blue)) {
+		if (teamColor.equals(TeamColor.blue)) {
 			System.out.print(Colors.blueTeam + "P" + Colors.ANSI_RESET);
 
-		} else if (teamColor.equals(Team.red)) {
+		} else if (teamColor.equals(TeamColor.red)) {
 			System.out.print(Colors.redTeam + "P" + Colors.ANSI_RESET);
 
 		} else {
@@ -36,5 +42,14 @@ public class Player {
 			System.err.println("WTF wrong team color");
 			System.out.println();
 		}
+	}
+
+	public String getTeamColor() {
+		return teamColor;
+	}
+
+	public void moveTo(int posX, int posY) {
+		this.posX = posX;
+		this.posY = posY;
 	}
 }

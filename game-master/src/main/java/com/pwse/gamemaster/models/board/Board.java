@@ -5,6 +5,10 @@ import com.pwse.gamemaster.models.player.Player;
 
 import java.util.ArrayList;
 
+
+/**
+ * This class is responsible for managing pieces, goals and background
+ */
 public class Board {
 	private BoardDimensions dim;
 	private BoardField[][] fields;
@@ -51,7 +55,7 @@ public class Board {
 
 	private Player getPlayerAtPosition(int posX, int posY, ArrayList<Player> players) {
 		for (Player p: players) {
-			if (p.getPosX() == posX && p.getPoxY() == posY) {
+			if (p.getPosX() == posX && p.getPosY() == posY) {
 				return p;
 			}
 		}
