@@ -44,11 +44,11 @@ public class BoardChecker {
 		//check if he doesn't go to enemy's goal area
 		String color = player.getTeamColor();
 		if (color.equals(TeamColor.red)) {
-			if (posY >= (dim.getHeight() - dim.getHeightOfTeamArea() - 1)) {
+			if (posY > (dim.getHeight() - dim.getHeightOfTeamArea() - 1)) {
 				throw new EnemyAreaException();
 			}
 		} else {
-			if (posY <= (dim.getHeightOfTeamArea() - 1)) {
+			if (posY < (dim.getHeightOfTeamArea() - 1)) {
 				throw new EnemyAreaException();
 			}
 		}
