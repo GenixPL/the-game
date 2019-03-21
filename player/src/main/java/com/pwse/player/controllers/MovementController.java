@@ -54,6 +54,14 @@ public class MovementController {
 		InfoSingleton.getInstance().getPlayerInfo().setPosX(currentX + 1);
 	}
 
+	public void moveToNearestGoal() {
+		//TODO
+	}
+
+	public void moveToNearestPiece() {
+		//TODO
+	}
+
 
 
 	private boolean isMoveCorrect(int posX, int posY) {

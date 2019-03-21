@@ -2,28 +2,20 @@ package com.pwse.player.controllers;
 
 
 
+import com.pwse.player.controllers.helpers.InfoSingleton;
 import com.pwse.player.models.BoardDimensions;
 import com.pwse.player.models.Exceptions.WrongMoveException;
 
 public class PlayerController {
 
 	private MovementController mController;
-	private ConnectionController cController;
+	private boolean hasPiece;
 
 
 
-	public PlayerController(BoardDimensions boardDimensions, ConnectionController connectionController) {
+	public PlayerController(BoardDimensions boardDimensions) {
 		this.mController = new MovementController();
-	}
-
-	public void askForInfo() {
-		//TODO
-		cController.sendMessage("ask for info");
-	}
-
-	public void discoverSurrounding() {
-		//TODO
-		cController.sendMessage("ask about surrounding");
+		this.hasPiece = false;
 	}
 
 	public void moveUp() throws WrongMoveException {
@@ -40,5 +32,24 @@ public class PlayerController {
 
 	public void moveRight() throws WrongMoveException {
 		mController.moveRight();
+	}
+
+	public void pickUpPiece() {
+		//TODO: throw
+		hasPiece = true;
+	}
+
+	public void dropPiece() {
+		//TODO: throw
+		hasPiece = false;
+	}
+
+	public void testPiece() {
+		//TODO
+	}
+
+	public void destroyPiece() {
+		//TODO
+		//InfoSingleton.getInstance().getBoardInfo().removePiece();
 	}
 }

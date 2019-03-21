@@ -33,7 +33,7 @@ public class WorkController {
 		//TODO: wait for connection and receive starting position before creating player
 		try {
 			InfoSingleton.init(boardDimensions, new Position(0, 0), "red");
-			this.pController = new PlayerController(boardDimensions, cController);
+			this.pController = new PlayerController(boardDimensions);
 
 		} catch (WrongTeamNameException e) {
 			System.err.println(e.getMessage());
@@ -74,7 +74,7 @@ public class WorkController {
 	private void doWork() {
 		while (true) {
 			System.out.println(TAG + "working");
-			pController.askForInfo();
+			exchangeInfo();
 
 			try {
 				Thread.sleep(2000);
@@ -82,5 +82,13 @@ public class WorkController {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void exchangeInfo() {
+		//TODO: it may be good idea to create some kind of "DecisionMaker" class
+	}
+
+	private void askForSurroundings() {
+		//TODO: it may be good idea to create some kind of "DecisionMaker" class
 	}
 }
