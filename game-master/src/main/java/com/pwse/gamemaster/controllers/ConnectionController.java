@@ -36,6 +36,8 @@ public class ConnectionController {
 			e.printStackTrace();
 			throw new OpenConnectionFailException();
 		}
+
+		System.out.println(TAG + "connection opened");
 	}
 
 	public void close() throws CloseConnectionFailException{

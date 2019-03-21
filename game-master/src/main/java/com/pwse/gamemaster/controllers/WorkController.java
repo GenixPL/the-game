@@ -3,7 +3,7 @@ package com.pwse.gamemaster.controllers;
 import com.pwse.gamemaster.models.ConnectionData;
 import com.pwse.gamemaster.models.GameData;
 import com.pwse.gamemaster.models.exceptions.CloseConnectionFailException;
-
+import com.pwse.gamemaster.models.exceptions.OpenConnectionFailException;
 
 
 public class WorkController {
@@ -27,12 +27,11 @@ public class WorkController {
 
 
 	private void start() {
-		//TODO: uncomment
-//		try {
-//			cController.connect();
-//		} catch (OpenConnectionFailException e) {
-//			System.exit(-1);
-//		}
+		try {
+			cController.connect();
+		} catch (OpenConnectionFailException e) {
+			System.exit(-1);
+		}
 
 		System.out.println(TAG + "starting work");
 		doWork();
@@ -65,7 +64,7 @@ public class WorkController {
 			bController.printBoard();
 
 			try {
-				Thread.sleep(500);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

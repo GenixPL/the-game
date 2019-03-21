@@ -2,7 +2,6 @@ package com.pwse.player.controllers;
 
 
 
-import com.pwse.player.controllers.helpers.InfoSingleton;
 import com.pwse.player.models.BoardDimensions;
 import com.pwse.player.models.Exceptions.WrongMoveException;
 

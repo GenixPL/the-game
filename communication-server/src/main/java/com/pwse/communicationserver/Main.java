@@ -11,8 +11,6 @@ import org.json.JSONObject;
 public class Main {
 
 	private static final String ARGS_PATTERN = "[current year]-[group id]-cs --port [port number] --conf [path to config file]";
-	private static int port;
-	private static int numOfPlayers;
 
 
 
@@ -21,26 +19,23 @@ public class Main {
 			return;
 		}
 
-		port = Integer.parseInt(args[2]);
-		numOfPlayers = getNumOfPlayers(args[4]);
-
-		startServer();
+		startServer(args);
 	}
 
 
 
-	private static void startServer() {
-		System.out.println("Communication server starts");
+	private static void startServer(String[] args) {
+		int numOfPlayers = getNumOfPlayers(args[4]);
 
-		Work work = new Work(port, numOfPlayers);
+		int gmPort = Integer.parseInt(args[2]);
+		int[] plPorts = new int[numOfPlayers];
+
+		for (int i = 0; i < numOfPlayers; i++) {
+			plPorts[i] = gmPort + 1 + i;
+		}
+
+		Work work = new Work(gmPort, plPorts);
 		work.run();
-
-		shutDownServer();
-	}
-
-	private static void shutDownServer() {
-		System.out.println("Communication server shuts down");
-		System.exit(0);
 	}
 
 	private static void informAboutWrongArgsPattern() {
