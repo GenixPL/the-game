@@ -1,16 +1,20 @@
 package com.pwse.player;
 
+import com.pwse.player.controllers.WorkController;
+import com.pwse.player.models.BoardDimensions;
+import com.pwse.player.models.ConnectionData;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+
 public class Main {
 
     private static final String ARGS_PATTERN = "[current year]-[group id]-pl --address [server address] --port [port number] --conf [path to config file]";
-    private static int csPort;
-    private static String csAddress;
 
 
 
@@ -19,26 +23,16 @@ public class Main {
             return;
         }
 
-        csPort = Integer.parseInt(args[4]);
-        csAddress = args[2];
-
-        startGame();
+        startGame(args);
     }
 
 
 
-    private static void startGame() {
-        System.out.println("GM starts");
+    private static void startGame(String[] args) {
+        String filePath = args[6];
 
-        Work work = new Work(csPort, csAddress);
-        work.run();
-
-        shutDownGame();
-    }
-
-    private static void shutDownGame() {
-        System.out.println("PL shuts down");
-        System.exit(0);
+        WorkController workController = new WorkController(getConnectionData(args), getBoardDimensions(filePath));
+        workController.run();
     }
 
     private static boolean isEveryArgCorrect(String args[]) {
@@ -77,11 +71,12 @@ public class Main {
             return false;
         }
 
+        //TODO: uncomment
         //check if port is available
-        if (!isPortOpened(Integer.parseInt(args[4]))) {
-            System.err.println("Given port is not opened");
-            return false;
-        }
+//        if (!isPortOpened(Integer.parseInt(args[4]))) {
+//            System.err.println("Given port is not opened");
+//            return false;
+//        }
 
         //check if sixth arg is "--conf"
         if (!args[5].equals("--conf")) {
@@ -142,5 +137,35 @@ public class Main {
         }
 
         return true;
+    }
+
+    private static BoardDimensions getBoardDimensions(String filePath) {
+        JSONObject file = new JSONObject(getFileContent(filePath));
+        JSONObject board = file.getJSONObject("board-dimensions");
+        int w = board.getInt("width");
+        int h = board.getInt("height");
+        int hoga = board.getInt("height-of-goal-area");
+
+        return new BoardDimensions(w, h, hoga);
+    }
+
+    private static ConnectionData getConnectionData(String[] args) {
+        int port = Integer.parseInt(args[4]);
+        String address = args[2];
+
+        return new ConnectionData(port, address);
+    }
+
+    private static String getFileContent(String filePath) {
+        String fileContent = null;
+        try {
+            fileContent = new String(Files.readAllBytes(Paths.get(filePath)));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return fileContent;
     }
 }
