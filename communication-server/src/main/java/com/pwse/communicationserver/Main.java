@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import com.pwse.communicationserver.controllers.WorkController;
 import org.json.JSONObject;
 
 public class Main {
@@ -34,8 +35,8 @@ public class Main {
 			plPorts[i] = gmPort + 1 + i;
 		}
 
-		Work work = new Work(gmPort, plPorts);
-		work.run();
+		WorkController workController = new WorkController(gmPort, plPorts);
+		workController.run();
 	}
 
 	private static void informAboutWrongArgsPattern() {

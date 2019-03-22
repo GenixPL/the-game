@@ -1,4 +1,4 @@
-package com.pwse.communicationserver;
+package com.pwse.communicationserver.controllers;
 
 import com.pwse.communicationserver.controllers.GmCommunicator;
 import com.pwse.communicationserver.controllers.PlCommunicator;
@@ -14,7 +14,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class Work {
+public class WorkController {
 
 	private final String TAG = this.getClass().getSimpleName() + ": ";
 
@@ -23,7 +23,7 @@ public class Work {
 
 
 
-	Work(int gmPort, int[] plPorts) {
+	public WorkController(int gmPort, int[] plPorts) {
 		this.gmCommunicator = new GmCommunicator(gmPort);
 		this.plCommunicator = new PlCommunicator(plPorts);
 	}
@@ -84,8 +84,6 @@ public class Work {
 		System.out.println(TAG + "starting message passing");
 
 		while (true) { //TODO: exit when proper message from gm comes
-
-			System.out.println(TAG + "next try");
 
 			if (gmCommunicator.isMessageWaiting()) {
 				try {

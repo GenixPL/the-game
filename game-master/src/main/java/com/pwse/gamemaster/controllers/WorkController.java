@@ -67,7 +67,7 @@ public class WorkController {
 				}
 
 			} else {
-				bController.movePlayerTo(1, 0, (30 - i++)); //move upJSONObject json = new JSONObject();
+				bController.movePlayerTo(1, 0, (30 - i++)); //move up
 
 				JSONObject json = new JSONObject();
 				json.put("action", "move-up");
@@ -80,7 +80,7 @@ public class WorkController {
 			bController.dropPiece(1);
 			bController.pickUpPiece(1);
 
-//			bController.printBoard();
+			bController.printBoard();
 
 			try {
 				Thread.sleep(2000);
