@@ -104,15 +104,16 @@ public class Main {
 	}
 
 	private static boolean isPortOpened(int port) {
-		try {
-			new Socket("localhost", port);
-
-			// If the code makes it this far without an exception it means something is using the port and has responded.
-			return true;
-
-		} catch (IOException e) {
-			return false;
-		}
+//		try {
+//			new Socket("localhost", port);
+//
+//			// If the code makes it this far without an exception it means something is using the port and has responded.
+//			return true;
+//
+//		} catch (IOException e) {
+//			return false;
+//		}
+		return true; //TODO: this is wrong way
 	}
 
 	private static boolean isInt(String str) {
