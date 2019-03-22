@@ -1,10 +1,13 @@
 package com.pwse.gamemaster.controllers;
 
+import com.pwse.gamemaster.controllers.helpers.BoardChecker;
 import com.pwse.gamemaster.models.ConnectionData;
 import com.pwse.gamemaster.models.GameData;
 import com.pwse.gamemaster.models.exceptions.CloseConnectionFailException;
 import com.pwse.gamemaster.models.exceptions.OpenConnectionFailException;
+import com.pwse.gamemaster.models.exceptions.ReadMessageErrorException;
 import com.pwse.gamemaster.models.exceptions.SendMessageErrorException;
+import com.pwse.gamemaster.view.BoardPrinter;
 import org.json.JSONObject;
 
 
@@ -53,6 +56,18 @@ public class WorkController {
 
 	private void doWork() {
 		//TODO
+		bController.printBoard();
+		String msg = "";
+		while (!msg.equals("start")) {
+			try {
+				JSONObject object = new JSONObject(cController.getMessage());
+				msg = object.getString("action");
+			} catch (ReadMessageErrorException e) {
+				e.printStackTrace();
+			}
+		}
+
+
 		int i = 0;
 		while (!bController.isGameEnded()) {
 			if (i < 12) {

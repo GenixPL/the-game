@@ -76,6 +76,14 @@ public class WorkController {
 	private void doWork() {
 		System.out.println(TAG + "starting message passing");
 
+		JSONObject jsonSt = new JSONObject();
+		jsonSt.put("action", "start");
+		try {
+			gmCommunicator.sendMessage(jsonSt);
+		} catch (SendMessageErrorException e) {
+			e.printStackTrace();
+		}
+
 		while (true) { //TODO: exit when proper message from gm comes
 
 			if (gmCommunicator.isMessageWaiting()) {
@@ -102,7 +110,7 @@ public class WorkController {
 			}
 
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
