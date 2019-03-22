@@ -1,18 +1,14 @@
 package com.pwse.player.controllers;
 
 import com.pwse.player.controllers.helpers.InfoSingleton;
-import com.pwse.player.models.Board.BoardInfo;
 import com.pwse.player.models.BoardDimensions;
 import com.pwse.player.models.ConnectionData;
 import com.pwse.player.models.Exceptions.CloseConnectionFailException;
 import com.pwse.player.models.Exceptions.OpenConnectionFailException;
+import com.pwse.player.models.Exceptions.ReadMessageErrorException;
 import com.pwse.player.models.Exceptions.WrongTeamNameException;
 import com.pwse.player.models.Position;
-import com.pwse.player.models.player.PlayerInfo;
-
-import java.io.IOException;
-import java.net.Socket;
-
+import org.json.JSONObject;
 
 
 /**
@@ -62,7 +58,7 @@ public class WorkController {
 		System.out.println(TAG + "stopping work");
 
 		try {
-			cController.close();
+			cController.disconnect();
 		} catch (CloseConnectionFailException e) {
 			System.exit(-1);
 		}
@@ -72,8 +68,20 @@ public class WorkController {
 
 	private void doWork() {
 		while (true) {
-			System.out.println(TAG + "working");
-			exchangeInfo();
+			if (cController.isMessageWaiting()) {
+				try {
+					String msg = cController.getMessage();
+					System.out.println(TAG + "new message from gm: " + msg);
+
+					JSONObject json = new JSONObject(msg);
+					if (json.getString("action").equals("end")) {
+						break;
+					}
+
+				} catch (ReadMessageErrorException e) {
+					System.err.println(e.getMessage());
+				}
+			}
 
 			try {
 				Thread.sleep(2000);
@@ -81,6 +89,8 @@ public class WorkController {
 				e.printStackTrace();
 			}
 		}
+
+		stop();
 	}
 
 	private void exchangeInfo() {

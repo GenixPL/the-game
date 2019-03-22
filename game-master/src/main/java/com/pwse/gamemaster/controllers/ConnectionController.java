@@ -48,14 +48,14 @@ public class ConnectionController {
 		System.out.println(TAG + "connection opened");
 	}
 
-	public void close() throws CloseConnectionFailException{
+	public void disconnect() throws CloseConnectionFailException{
 		System.out.println(TAG + "closing connection with: " + cData.getAddress() + " at port: " + cData.getPort());
 
 		try {
 			socket.close();
 
 		} catch (Exception e) {
-			System.err.println(TAG + "failed to close connection with: " + cData.getAddress() + " at port: " + cData.getPort());
+			System.err.println(TAG + "failed to disconnect connection with: " + cData.getAddress() + " at port: " + cData.getPort());
 			e.printStackTrace();
 			throw new CloseConnectionFailException();
 		}

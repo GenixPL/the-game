@@ -43,7 +43,7 @@ public class WorkController {
 		System.out.println(TAG + "stopping work");
 
 		try {
-			cController.close();
+			cController.disconnect();
 		} catch (CloseConnectionFailException e) {
 			System.exit(-1);
 		}
@@ -67,7 +67,7 @@ public class WorkController {
 				}
 
 			} else {
-				bController.movePlayerTo(1, 0, (30 - i++)); //move up
+				bController.movePlayerTo(1, 0, (24 - i++)); //move up
 
 				JSONObject json = new JSONObject();
 				json.put("action", "move-up");
@@ -88,6 +88,16 @@ public class WorkController {
 				e.printStackTrace();
 			}
 		}
+
+		JSONObject json = new JSONObject();
+		json.put("action", "end");
+		try {
+			cController.sendMessage(json);
+		} catch (SendMessageErrorException e) {
+			System.err.println(TAG + e.getMessage());
+		}
+
+		stop();
 	}
 
 }

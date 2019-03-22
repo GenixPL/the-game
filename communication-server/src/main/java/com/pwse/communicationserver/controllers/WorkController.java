@@ -1,17 +1,10 @@
 package com.pwse.communicationserver.controllers;
 
-import com.pwse.communicationserver.controllers.GmCommunicator;
-import com.pwse.communicationserver.controllers.PlCommunicator;
 import com.pwse.communicationserver.models.exceptions.GmConnectionFailedException;
 import com.pwse.communicationserver.models.exceptions.PlConnectionFailedException;
 import com.pwse.communicationserver.models.exceptions.ReadMessageErrorException;
-
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import com.pwse.communicationserver.models.exceptions.SendMessageErrorException;
+import org.json.JSONObject;
 
 
 public class WorkController {
@@ -45,15 +38,15 @@ public class WorkController {
 			System.exit(-1);
 		}
 
-//		try {
-//			System.out.println(TAG + "connecting with pl");
-//			plCommunicator.openSockets();
-//			plCommunicator.connect();
-//
-//		} catch (PlConnectionFailedException e) {
-//			System.err.println(e.getMessage());
-//			System.exit(-1);
-//		}
+		try {
+			System.out.println(TAG + "connecting with pl");
+			plCommunicator.openSockets();
+			plCommunicator.connect();
+
+		} catch (PlConnectionFailedException e) {
+			System.err.println(e.getMessage());
+			System.exit(-1);
+		}
 
 		doWork();
 	}
@@ -87,13 +80,26 @@ public class WorkController {
 
 			if (gmCommunicator.isMessageWaiting()) {
 				try {
-					System.out.println(TAG + "new message from gm: " + gmCommunicator.getMessage());
+					String msg = gmCommunicator.getMessage();
+					System.out.println(TAG + "new message from gm: " + msg);
+
+					JSONObject json = new JSONObject(msg);
+					if (json.getString("action").equals("end")) {
+
+						try {
+							plCommunicator.sendToAll(json);
+						} catch (SendMessageErrorException e) {
+							System.err.println(TAG + "sending to all pl " + e.getMessage());
+						}
+
+						stop();
+						break;
+					}
+
 				} catch (ReadMessageErrorException e) {
 					System.err.println(e.getMessage());
 				}
 			}
-
-
 
 			try {
 				Thread.sleep(2000);
@@ -102,4 +108,5 @@ public class WorkController {
 			}
 		}
 	}
+
 }
