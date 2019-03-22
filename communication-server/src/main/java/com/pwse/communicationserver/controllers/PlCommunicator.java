@@ -3,7 +3,9 @@ package com.pwse.communicationserver.controllers;
 import com.pwse.communicationserver.models.PlayerContact;
 import com.pwse.communicationserver.models.exceptions.PlConnectionFailedException;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
@@ -14,7 +16,8 @@ public class PlCommunicator {
 	private final String TAG = this.getClass().getSimpleName() + ": ";
 
 	private ArrayList<PlayerContact> playersContacts;
-
+	private ArrayList<BufferedReader> readers; //TODO
+	private ArrayList<OutputStreamWriter> writers; //TODO
 
 
 	public PlCommunicator(int[] portsToConnect) {

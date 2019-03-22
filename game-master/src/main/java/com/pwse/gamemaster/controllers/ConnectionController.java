@@ -3,9 +3,13 @@ package com.pwse.gamemaster.controllers;
 import com.pwse.gamemaster.models.ConnectionData;
 import com.pwse.gamemaster.models.exceptions.CloseConnectionFailException;
 import com.pwse.gamemaster.models.exceptions.OpenConnectionFailException;
+import com.pwse.gamemaster.models.exceptions.ReadMessageErrorException;
+import com.pwse.gamemaster.models.exceptions.SendMessageErrorException;
+import org.json.JSONObject;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 
 /**
@@ -18,6 +22,8 @@ public class ConnectionController {
 	private ConnectionData cData;
 
 	private Socket socket;
+	private DataInputStream reader;
+	private DataOutputStream writer;
 
 
 
@@ -30,6 +36,8 @@ public class ConnectionController {
 
 		try {
 			socket = new Socket(cData.getAddress(), cData.getPort());
+			reader = new DataInputStream(socket.getInputStream());
+			writer = new DataOutputStream(socket.getOutputStream());
 
 		} catch (IOException e) {
 			System.err.println(TAG + "failed to open connection with: " + cData.getAddress() + " at port: " + cData.getPort());
@@ -53,9 +61,41 @@ public class ConnectionController {
 		}
 	}
 
-	public void sendMessage(String msg) {
-		//TODO: messages
-		//TODO: throw different errors if occur
-		System.out.println(TAG + "sending message: " + msg);
+	public String getMessage() throws ReadMessageErrorException {
+		String msg = null;
+
+		try {
+			msg = reader.readUTF();
+		} catch (IOException e) {
+			throw new ReadMessageErrorException();
+		}
+
+		return msg;
+	}
+
+	public boolean isMessageWaiting() {
+		boolean isReady = false;
+
+		try {
+			isReady = (reader.available() != 0);
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+
+		return isReady;
+	}
+
+	public void sendMessage(JSONObject json) throws SendMessageErrorException {
+		System.out.println(TAG + "sending message");
+
+		try {
+			writer.writeUTF(json.toString());
+
+		} catch (IOException e) {
+			System.err.println(TAG + e.getMessage());
+			throw new SendMessageErrorException();
+		}
+
+		System.out.println(TAG + "message sent");
 	}
 }

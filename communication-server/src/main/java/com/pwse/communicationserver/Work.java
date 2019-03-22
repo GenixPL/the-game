@@ -4,6 +4,7 @@ import com.pwse.communicationserver.controllers.GmCommunicator;
 import com.pwse.communicationserver.controllers.PlCommunicator;
 import com.pwse.communicationserver.models.exceptions.GmConnectionFailedException;
 import com.pwse.communicationserver.models.exceptions.PlConnectionFailedException;
+import com.pwse.communicationserver.models.exceptions.ReadMessageErrorException;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -44,15 +45,15 @@ public class Work {
 			System.exit(-1);
 		}
 
-		try {
-			System.out.println(TAG + "connecting with pl");
-			plCommunicator.openSockets();
-			plCommunicator.connect();
-
-		} catch (PlConnectionFailedException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
-		}
+//		try {
+//			System.out.println(TAG + "connecting with pl");
+//			plCommunicator.openSockets();
+//			plCommunicator.connect();
+//
+//		} catch (PlConnectionFailedException e) {
+//			System.err.println(e.getMessage());
+//			System.exit(-1);
+//		}
 
 		doWork();
 	}
@@ -84,8 +85,20 @@ public class Work {
 
 		while (true) { //TODO: exit when proper message from gm comes
 
+			System.out.println(TAG + "next try");
+
+			if (gmCommunicator.isMessageWaiting()) {
+				try {
+					System.out.println(TAG + "new message from gm: " + gmCommunicator.getMessage());
+				} catch (ReadMessageErrorException e) {
+					System.err.println(e.getMessage());
+				}
+			}
+
+
+
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
