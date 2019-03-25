@@ -18,6 +18,7 @@ public class Player {
 
 
 	public Player(int id, String teamColor, int posX, int posY) {
+		this.id = id;
 		this.teamColor = teamColor;
 		this.posX = posX;
 		this.posY = posY;

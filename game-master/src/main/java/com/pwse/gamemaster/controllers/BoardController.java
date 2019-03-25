@@ -13,6 +13,7 @@ import com.pwse.gamemaster.models.player.Player;
 import com.pwse.gamemaster.models.team.Team;
 import com.pwse.gamemaster.models.team.TeamColor;
 import com.pwse.gamemaster.view.BoardPrinter;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -140,6 +141,25 @@ public class BoardController {
 		}
 
 		checkScores();
+	}
+
+	public JSONObject getInfoOfPlayerWithId(int id) {
+		JSONObject json = null;
+
+		for (Player pl : players) {
+			if (pl.getId() == id) {
+				JSONObject positionJson = new JSONObject();
+				positionJson.put("x", pl.getPosX());
+				positionJson.put("y", pl.getPosY());
+
+				json = new JSONObject();
+				json.put("id", id);
+				json.put("team", pl.getTeamColor());
+				json.put("position", positionJson);
+			}
+		}
+
+		return json;
 	}
 
 

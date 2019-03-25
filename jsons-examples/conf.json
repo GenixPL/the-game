@@ -1,0 +1,29 @@
+{
+    "number-of-players": 4,
+    "board-dimensions" : {
+        "width": 8,
+        "height": 12,
+        "height-of-goal-area": 3
+    },
+    "goals": [
+        {
+            "x": 0,
+            "y": 0
+        },
+        {
+            "x": 5,
+            "y": 10
+        },
+        {
+            "x": 1,
+            "y": 2
+        },
+        {
+            "x": 7,
+            "y": 11
+        }
+    ], 
+    "number-of-pieces": 4,
+    "probability-of-sham": 0.25,
+    "piece-spawn-frequency": 20000
+}

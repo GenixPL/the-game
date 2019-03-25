@@ -97,7 +97,7 @@ public class PlCommunicator {
 	}
 
 	public void sendMsgToPlayerWithId(int id, JSONObject json) throws SendMessageErrorException {
-		System.out.println(TAG + "sending message to player with id: " + id);
+		System.out.println(TAG + "sending message to player with id: " + id + " msg: " + json.toString());
 
 		try {
 			for (PlayerContact plC : playersContacts) {
@@ -130,7 +130,7 @@ public class PlCommunicator {
 		return isReady;
 	}
 
-	public String getMessageFromPlayerWithId(int id) throws ReadMessageErrorException {
+	public JSONObject getMessageFromPlayerWithId(int id) throws ReadMessageErrorException {
 		System.out.println(TAG + "getting message from player with id: " + id);
 		String msg = null;
 
@@ -145,7 +145,28 @@ public class PlCommunicator {
 			}
 		}
 
-		System.out.println(TAG + "got the message from player with id: " + id);
-		return msg;
+		System.out.println(TAG + "received message: " + msg);
+
+		return new JSONObject(msg);
+	}
+
+	public void setPlayerTeamFromJson(JSONObject json) {
+		int playerId = getPlayerIdFromJson(json);
+
+		for (PlayerContact plC : playersContacts) {
+			if (plC.getId() == playerId) {
+				plC.setTeamColor(getTeamFromJson(json));
+			}
+		}
+	}
+
+	public int getPlayerIdFromJson(JSONObject json) {
+		return json.getInt("id");
+	}
+
+
+
+	private String getTeamFromJson(JSONObject json) {
+		return json.getString("team");
 	}
 }

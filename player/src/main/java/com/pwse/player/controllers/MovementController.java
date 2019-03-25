@@ -54,11 +54,11 @@ public class MovementController {
 		InfoSingleton.getInstance().getPlayerInfo().setPosX(currentX + 1);
 	}
 
-	public void moveToNearestGoal() {
+	public void moveTowardsNearestGoal() {
 		//TODO
 	}
 
-	public void moveToNearestPiece() {
+	public void moveTowardsNearestPiece() {
 		//TODO
 	}
 

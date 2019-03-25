@@ -1,0 +1,9 @@
+{
+    "action": "player-info",
+    "id": "...",
+    "team": "...",
+    "position": {
+        "x": "...",
+        "y": "..."
+    }
+}

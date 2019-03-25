@@ -4,11 +4,9 @@ import com.pwse.player.controllers.helpers.InfoSingleton;
 import com.pwse.player.controllers.helpers.Messenger;
 import com.pwse.player.models.BoardDimensions;
 import com.pwse.player.models.ConnectionData;
-import com.pwse.player.models.Exceptions.CloseConnectionFailException;
-import com.pwse.player.models.Exceptions.OpenConnectionFailException;
-import com.pwse.player.models.Exceptions.ReadMessageErrorException;
-import com.pwse.player.models.Exceptions.WrongTeamNameException;
+import com.pwse.player.models.Exceptions.*;
 import com.pwse.player.models.Position;
+import com.pwse.player.models.player.PlayerInfo;
 import org.json.JSONObject;
 
 
@@ -19,24 +17,18 @@ public class WorkController {
 
 	private final String TAG = this.getClass().getSimpleName() + ": ";
 
-	ConnectionController cController;
-	PlayerController pController;
+	private ConnectionController cController;
+	private PlayerController pController;
+	private BoardDimensions bDim;
 
 	private boolean shouldWork = true;
 
 
+
 	public WorkController(ConnectionData connectionData, BoardDimensions boardDimensions) {
 		this.cController = new ConnectionController(connectionData);
-
-		//TODO: wait for connection and receive starting position before creating player
-		try {
-			InfoSingleton.init(boardDimensions, new Position(0, 0), "red");
-			this.pController = new PlayerController(boardDimensions);
-
-		} catch (WrongTeamNameException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
-		}
+		this.pController = new PlayerController(boardDimensions);
+		this.bDim = boardDimensions;
 	}
 
 	public void run() {
@@ -69,15 +61,9 @@ public class WorkController {
 	private void doWork() {
 		System.out.println(TAG + "starting work");
 
-		//read until "start" message appears
-		String msg = "";
-		while (!msg.equals("start")) {
-			try {
-				msg = Messenger.getActionFromJson(cController.getMessage());
-			} catch (ReadMessageErrorException e) {
-				e.printStackTrace();
-			}
-		}
+		exchangePlayerInfo();
+
+		waitForStartMessage();
 
 		//work until "end" message appears
 		while (shouldWork) {
@@ -97,6 +83,57 @@ public class WorkController {
 	private void reactToMsg(JSONObject json) {
 		if (Messenger.getActionFromJson(json).equals("end")) {
 			shouldWork = false;
+		}
+	}
+
+	private void waitForStartMessage() {
+		try {
+			System.out.println(TAG + "waiting for start message");
+			JSONObject json = cController.getMessage();
+			if (!Messenger.getActionFromJson(json).equals("start")) {
+				System.err.println(TAG + "received message with wrong action");
+				System.exit(-1);
+			}
+			System.out.println(TAG + "message received");
+
+		} catch (ReadMessageErrorException e) {
+			System.err.println(TAG + e.getMessage());
+			System.exit(-1);
+		}
+	}
+
+	private void exchangePlayerInfo() {
+		try {
+			System.out.println(TAG + "waiting for player-info message");
+			JSONObject json = cController.getMessage();
+			if (!Messenger.getActionFromJson(json).equals("player-info")) {
+				System.err.println(TAG + "received message with wrong action");
+				System.exit(-1);
+			}
+			System.out.println(TAG + "message received");
+
+			try {
+				Position pos = new Position(json.getJSONObject("position").getInt("x"), json.getJSONObject("position").getInt("y"));
+				InfoSingleton.init(bDim, pos, json.getString("team"));
+
+			} catch (WrongTeamNameException e) {
+				System.err.println(TAG + e.getMessage());
+				System.exit(-1);
+			}
+
+		} catch (ReadMessageErrorException e) {
+			System.err.println(TAG + e.getMessage());
+			System.exit(-1);
+		}
+
+		try {
+			System.out.println(TAG + "sending ready message");
+			cController.sendMessage(Messenger.createMsgWithAction("ready"));
+			System.out.println(TAG + "message sent");
+
+		} catch (SendMessageErrorException e) {
+			System.err.println(TAG + e.getMessage());
+			System.exit(-1);
 		}
 	}
 

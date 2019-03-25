@@ -18,18 +18,18 @@ public class WorkController {
 
 	private ConnectionController cController;
 	private BoardController bController;
-
+	private int numOfPlayers;
 
 
 	public WorkController(ConnectionData connectionData, GameData gameData) {
 		this.cController = new ConnectionController(connectionData);
 		this.bController = new BoardController(gameData);
+		this.numOfPlayers = gameData.getNumOfPlayers();
 	}
 
 	public void run() {
 		start();
 	}
-
 
 
 	private void start() {
@@ -43,8 +43,6 @@ public class WorkController {
 	}
 
 	private void stop() {
-		System.out.println(TAG + "stopping work");
-
 		try {
 			cController.disconnect();
 		} catch (CloseConnectionFailException e) {
@@ -56,25 +54,18 @@ public class WorkController {
 
 	private void doWork() {
 		System.out.println(TAG + "starting work");
-		System.out.println(TAG + "waiting for starting message...");
 		bController.printBoard();
 
-		//read until "start" message appears
-		String msg = "";
-		while (!msg.equals("start")) {
-			try {
-				msg = Messenger.getActionFromJson(cController.getMessage());
-			} catch (ReadMessageErrorException e) {
-				e.printStackTrace();
-			}
-		}
+		exchangePlayersInfo();
 
-		//work until game has ended
+		waitForStartMessage();
+
 		while (!bController.isGameEnded()) {
 			JSONObject json;
 			try {
 				json = cController.getMessage();
 				reactToMsg(json);
+
 			} catch (ReadMessageErrorException e) {
 				System.err.println(e.getMessage());
 			}
@@ -89,7 +80,54 @@ public class WorkController {
 			System.err.println(TAG + e.getMessage());
 		}
 
+
+		System.out.println(TAG + "stopping work");
 		stop();
+	}
+
+	private void exchangePlayersInfo() {
+		for (int i = 0; i < numOfPlayers; i++) {
+			try {
+				System.out.println(TAG + "waiting for player-info message for player with id: " + i);
+				JSONObject json = cController.getMessage();
+				if (!Messenger.getActionFromJson(json).equals("player-info")) {
+					System.err.println(TAG + "received message with wrong action");
+					System.exit(-1);
+				}
+				System.out.println(TAG + "message received");
+
+			} catch (ReadMessageErrorException e) {
+				System.err.println(TAG + e.getMessage());
+				System.exit(-1);
+			}
+
+			try {
+				System.out.println(TAG + "sending player-info for player with id: " + i);
+				JSONObject answerJson = bController.getInfoOfPlayerWithId(i);
+				answerJson.put("action", "player-info");
+				cController.sendMessage(answerJson);
+
+			} catch (SendMessageErrorException e) {
+				System.err.println(TAG + e.getMessage());
+				System.exit(-1);
+			}
+		}
+	}
+
+	private void waitForStartMessage() {
+		try {
+			System.out.println(TAG + "waiting for start message");
+			JSONObject json = cController.getMessage();
+			if (!Messenger.getActionFromJson(json).equals("start")) {
+				System.err.println(TAG + "received message with wrong action");
+				System.exit(-1);
+			}
+			System.out.println(TAG + "message received");
+
+		} catch (ReadMessageErrorException e) {
+			System.err.println(TAG + e.getMessage());
+			System.exit(-1);
+		}
 	}
 
 	private void reactToMsg(JSONObject json) {

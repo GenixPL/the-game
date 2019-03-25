@@ -5,6 +5,7 @@ import com.pwse.communicationserver.models.exceptions.GmConnectionFailedExceptio
 import com.pwse.communicationserver.models.exceptions.PlConnectionFailedException;
 import com.pwse.communicationserver.models.exceptions.ReadMessageErrorException;
 import com.pwse.communicationserver.models.exceptions.SendMessageErrorException;
+import com.sun.xml.internal.ws.api.model.MEP;
 import org.json.JSONObject;
 
 
@@ -39,18 +40,16 @@ public class WorkController {
 			gmCommunicator.connect();
 
 		} catch (GmConnectionFailedException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
+			printExceptionAndEnd(e);
 		}
 
 		try {
-			System.out.println(TAG + "connecting with pl");
+			System.out.println(TAG + "connecting with players");
 			plCommunicator.openSockets();
 			plCommunicator.connect();
 
 		} catch (PlConnectionFailedException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
+			printExceptionAndEnd(e);
 		}
 
 		doWork();
@@ -63,52 +62,47 @@ public class WorkController {
 			gmCommunicator.closeSocket();
 
 		} catch (GmConnectionFailedException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
+			printExceptionAndEnd(e);
 		}
 
 		try {
-			System.out.println(TAG + "disconnecting with pl");
+			System.out.println(TAG + "disconnecting with players");
 			plCommunicator.disconnect();
 			plCommunicator.closeSockets();
 
 		} catch (PlConnectionFailedException e) {
-			System.err.println(e.getMessage());
-			System.exit(-1);
+			printExceptionAndEnd(e);
 		}
 	}
 
 	private void doWork() {
 		System.out.println(TAG + "starting work");
 
-		//send message to gm informing that everyone has connected and game can be started
-		try {
-			gmCommunicator.sendMessage(Messenger.createMsgWithAction("start"));
-		} catch (SendMessageErrorException e) {
-			e.printStackTrace();
-		}
+		exchangePlayersInfo();
+
+		sendStartGameMessage();
 
 		while (shouldWork) {
 			if (gmCommunicator.isMessageWaiting()) {
 				try {
-					String msg = gmCommunicator.getMessage();
-					System.out.println(TAG + "new message from gm: " + msg);
-					reactToMsgFromGm(msg);
+					JSONObject json = gmCommunicator.getMessage();
+					System.out.println(TAG + "new message from gm: " + json.toString());
+					reactToMsgFromGm(json);
 
 				} catch (ReadMessageErrorException e) {
-					System.err.println(e.getMessage());
+					printExceptionAndEnd(e);
 				}
 			}
 
 			for (int i = 0; i < numOfPlayers; i++) {
 				if (plCommunicator.isMessageWaitingFromPlayerWithId(i)) {
 					try {
-						String msg = plCommunicator.getMessageFromPlayerWithId(i);
-						System.out.println(TAG + "new message from pl with id: " + i + " msg: " + msg);
-						reactToMsgFromPlayerWithId(i);
+						JSONObject json = plCommunicator.getMessageFromPlayerWithId(i);
+						System.out.println(TAG + "new message from player with id: " + i + " msg: " + json);
+						reactToMsgFromPlayerWithId(i, json);
 
 					} catch (ReadMessageErrorException e) {
-						e.printStackTrace();
+						printExceptionAndEnd(e);
 					}
 				}
 			}
@@ -117,22 +111,98 @@ public class WorkController {
 		stop();
 	}
 
-	private void reactToMsgFromGm(String msg) {
-		JSONObject json = new JSONObject(msg);
+	private void exchangePlayersInfo() {
+		for (int i = 0; i < numOfPlayers; i++) {
+			//ask for player's info
+			try {
+				System.out.println(TAG + "asking for location and team of player with id: " + i);
+				JSONObject playerInfoJson = new JSONObject();
+				playerInfoJson.put("action", "player-info");
+				playerInfoJson.put("id", i);
+				gmCommunicator.sendMessage(playerInfoJson);
+				System.out.println(TAG + "message sent");
 
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+			//get player's info
+			JSONObject receivedPlayerInfoJson = null;
+			try {
+				System.out.println(TAG + "waiting for location and team of player with id: " + i);
+				receivedPlayerInfoJson = gmCommunicator.getMessage();
+				if (!Messenger.getActionFromJson(receivedPlayerInfoJson).equals("player-info")) {
+					System.err.println(TAG + "received message with wrong action");
+					System.exit(-1);
+				}
+				plCommunicator.setPlayerTeamFromJson(receivedPlayerInfoJson);
+				System.out.println(TAG + "message received");
+
+			} catch (ReadMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+			//send info to player
+			try {
+				System.out.println(TAG + "sending location and team to player with id: " + i);
+				plCommunicator.sendMsgToPlayerWithId(i, receivedPlayerInfoJson);
+				System.out.println(TAG + "message sent");
+
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+			//wait for ready message from player
+			try {
+				System.out.println(TAG + "waiting for ready message from player with id: " + i);
+				JSONObject receivedMsg = plCommunicator.getMessageFromPlayerWithId(i);
+				if (!Messenger.getActionFromJson(receivedMsg).equals("ready")) {
+					System.err.println(TAG + "received message with wrong action");
+					System.exit(-1);
+				}
+
+			} catch (ReadMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+		}
+	}
+
+	private void sendStartGameMessage() {
+		try {
+			System.out.println(TAG + "sending start messages to gm and players");
+
+			JSONObject msg = Messenger.createMsgWithAction("start");
+
+			gmCommunicator.sendMessage(msg);
+			plCommunicator.sendToAll(msg);
+
+			System.out.println(TAG + "messages sent");
+
+		} catch (SendMessageErrorException e) {
+			printExceptionAndEnd(e);
+		}
+	}
+
+	private void reactToMsgFromGm(JSONObject json) {
 		if (Messenger.getActionFromJson(json).equals("end")) {
 			shouldWork = false;
 
 			try {
 				plCommunicator.sendToAll(json);
 			} catch (SendMessageErrorException e) {
-				System.err.println(TAG + "sending to all pl " + e.getMessage());
+				printExceptionAndEnd(e);
 			}
 		}
 	}
 
-	private void reactToMsgFromPlayerWithId(int id) {
-	
+	private void reactToMsgFromPlayerWithId(int id, JSONObject json) {
+
+	}
+
+	private void printExceptionAndEnd(Exception e) {
+		System.err.println(TAG + e.getMessage());
+		e.printStackTrace();
+		System.exit(-1);
 	}
 
 }

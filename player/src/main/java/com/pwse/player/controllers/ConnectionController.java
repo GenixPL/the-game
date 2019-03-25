@@ -77,7 +77,7 @@ public class ConnectionController {
 	}
 
 	public void sendMessage(JSONObject json) throws SendMessageErrorException {
-		System.out.println(TAG + "sending message");
+		System.out.println(TAG + "sending message: " + json.toString());
 
 		try {
 			writer.writeUTF(json.toString());
