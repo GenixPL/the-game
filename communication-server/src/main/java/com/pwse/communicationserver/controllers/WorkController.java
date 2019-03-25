@@ -1,5 +1,6 @@
 package com.pwse.communicationserver.controllers;
 
+import com.pwse.communicationserver.controllers.helpers.Messenger;
 import com.pwse.communicationserver.models.exceptions.GmConnectionFailedException;
 import com.pwse.communicationserver.models.exceptions.PlConnectionFailedException;
 import com.pwse.communicationserver.models.exceptions.ReadMessageErrorException;
@@ -13,12 +14,16 @@ public class WorkController {
 
 	private GmCommunicator gmCommunicator;
 	private PlCommunicator plCommunicator;
+	private int numOfPlayers;
+
+	private boolean shouldWork = true;
 
 
 
 	public WorkController(int gmPort, int[] plPorts) {
 		this.gmCommunicator = new GmCommunicator(gmPort);
 		this.plCommunicator = new PlCommunicator(plPorts);
+		this.numOfPlayers = plPorts.length;
 	}
 
 	public void run() {
@@ -74,47 +79,60 @@ public class WorkController {
 	}
 
 	private void doWork() {
-		System.out.println(TAG + "starting message passing");
+		System.out.println(TAG + "starting work");
 
-		JSONObject jsonSt = new JSONObject();
-		jsonSt.put("action", "start");
+		//send message to gm informing that everyone has connected and game can be started
 		try {
-			gmCommunicator.sendMessage(jsonSt);
+			gmCommunicator.sendMessage(Messenger.createMsgWithAction("start"));
 		} catch (SendMessageErrorException e) {
 			e.printStackTrace();
 		}
 
-		while (true) { //TODO: exit when proper message from gm comes
-
+		while (shouldWork) {
 			if (gmCommunicator.isMessageWaiting()) {
 				try {
 					String msg = gmCommunicator.getMessage();
 					System.out.println(TAG + "new message from gm: " + msg);
-
-					JSONObject json = new JSONObject(msg);
-					if (json.getString("action").equals("end")) {
-
-						try {
-							plCommunicator.sendToAll(json);
-						} catch (SendMessageErrorException e) {
-							System.err.println(TAG + "sending to all pl " + e.getMessage());
-						}
-
-						stop();
-						break;
-					}
+					reactToMsgFromGm(msg);
 
 				} catch (ReadMessageErrorException e) {
 					System.err.println(e.getMessage());
 				}
 			}
 
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			for (int i = 0; i < numOfPlayers; i++) {
+				if (plCommunicator.isMessageWaitingFromPlayerWithId(i)) {
+					try {
+						String msg = plCommunicator.getMessageFromPlayerWithId(i);
+						System.out.println(TAG + "new message from pl with id: " + i + " msg: " + msg);
+						reactToMsgFromPlayerWithId(i);
+
+					} catch (ReadMessageErrorException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
+
+		stop();
+	}
+
+	private void reactToMsgFromGm(String msg) {
+		JSONObject json = new JSONObject(msg);
+
+		if (Messenger.getActionFromJson(json).equals("end")) {
+			shouldWork = false;
+
+			try {
+				plCommunicator.sendToAll(json);
+			} catch (SendMessageErrorException e) {
+				System.err.println(TAG + "sending to all pl " + e.getMessage());
+			}
+		}
+	}
+
+	private void reactToMsgFromPlayerWithId(int id) {
+	
 	}
 
 }
