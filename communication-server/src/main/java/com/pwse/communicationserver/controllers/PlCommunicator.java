@@ -114,6 +114,26 @@ public class PlCommunicator {
 		System.out.println(TAG + "message sent");
 	}
 
+	public void sendMsgToTeamFromPlayerWithId(int id, JSONObject json) throws SendMessageErrorException {
+		String team = playersContacts.get(id).getTeamColor();
+
+		System.out.println(TAG + "sending messages to team: " + team + " from player with id: " + id + " msg: " + json.toString());
+
+		try {
+			for (PlayerContact plC : playersContacts) {
+				if (plC.getTeamColor().equals(team) && plC.getId() != id) {
+					plC.getWriter().writeUTF(json.toString());
+				}
+			}
+
+		} catch (IOException e) {
+			System.err.println(TAG + e.getMessage());
+			throw new SendMessageErrorException();
+		}
+
+		System.out.println(TAG + "messages sent");
+	}
+
 	public boolean isMessageWaitingFromPlayerWithId(int id) {
 		boolean isReady = false;
 

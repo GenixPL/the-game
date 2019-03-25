@@ -222,6 +222,33 @@ public class WorkController {
 				printExceptionAndEnd(e);
 			}
 
+		} else if (action.equals("discover")) {
+			int id = plCommunicator.getPlayerIdFromJson(json);
+
+			try {
+				plCommunicator.sendMsgToPlayerWithId(id, json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else if (action.equals("test-piece")) {
+			int id = plCommunicator.getPlayerIdFromJson(json);
+
+			try {
+				plCommunicator.sendMsgToPlayerWithId(id, json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else if (action.equals("destroy-piece")) {
+			int id = plCommunicator.getPlayerIdFromJson(json);
+
+			try {
+				plCommunicator.sendMsgToPlayerWithId(id, json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
 		} else {
 			System.err.println(TAG + "received message with wrong action");
 		}
@@ -257,12 +284,57 @@ public class WorkController {
 				printExceptionAndEnd(e);
 			}
 
+		} else if (action.equals("discover")) {
+			json.put("id", id);
+
+			try {
+				gmCommunicator.sendMessage(json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		}  else if (action.equals("test-piece")) {
+			json.put("id", id);
+
+			try {
+				gmCommunicator.sendMessage(json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		}  else if (action.equals("destroy-piece")) {
+			json.put("id", id);
+
+			try {
+				gmCommunicator.sendMessage(json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else if (action.equals("exchange-info")) {
+			if (json.has("reply-to")) {
+				try {
+					plCommunicator.sendMsgToPlayerWithId(json.getInt("reply-to"), json);
+				} catch (SendMessageErrorException e) {
+					printExceptionAndEnd(e);
+				}
+
+			} else {
+				json.put("reply-to", id);
+				try {
+					plCommunicator.sendMsgToTeamFromPlayerWithId(id, json);
+				} catch (SendMessageErrorException e) {
+					printExceptionAndEnd(e);
+				}
+			}
+
 		} else {
 			System.err.println(TAG+ "received message with wrong action");
 		}
 	}
 
 	private void printExceptionAndEnd(Exception e) {
+		//TODO: it should always exit (change it in other methods not here)
 		System.err.println(TAG + e.getMessage());
 		e.printStackTrace();
 		System.exit(-1);
