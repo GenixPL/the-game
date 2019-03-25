@@ -69,8 +69,22 @@ public class WorkController {
 		while (shouldWork) {
 			JSONObject json;
 			try {
+				Position pos = null;
+				try {
+					pos = pController.getMoveDownCords();
+				} catch (WrongMoveException e) {
+					System.err.println(TAG + e.getMessage());
+				}
+
+				try {
+					cController.sendMessage(createMoveMsg(pos));
+				} catch (SendMessageErrorException e) {
+					System.err.println(TAG + e.getMessage());
+				}
+
 				json = cController.getMessage();
 				reactToMsg(json);
+
 			} catch (ReadMessageErrorException e) {
 				System.err.println(e.getMessage());
 			}
@@ -81,8 +95,22 @@ public class WorkController {
 	}
 
 	private void reactToMsg(JSONObject json) {
-		if (Messenger.getActionFromJson(json).equals("end")) {
+		String action = Messenger.getActionFromJson(json);
+
+		if (action.equals("end")) {
 			shouldWork = false;
+
+		} else if (action.equals("move")) {
+			if (json.getBoolean("approved")) {
+				try {
+					pController.moveTo(new Position(json.getInt("x"), json.getInt("y")));
+				} catch (WrongMoveException e) {
+					//TODO
+				}
+			}
+
+		} else {
+			System.err.println("Unknown action");
 		}
 	}
 
@@ -135,6 +163,15 @@ public class WorkController {
 			System.err.println(TAG + e.getMessage());
 			System.exit(-1);
 		}
+	}
+
+	private JSONObject createMoveMsg(Position pos) {
+		JSONObject json = new JSONObject("move");
+		json.put("action", "move");
+		json.put("x", pos.getX());
+		json.put("y", pos.getY());
+
+		return json;
 	}
 
 	private void exchangeInfo() {

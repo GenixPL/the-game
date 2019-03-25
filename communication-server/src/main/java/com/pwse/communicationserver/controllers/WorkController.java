@@ -184,7 +184,9 @@ public class WorkController {
 	}
 
 	private void reactToMsgFromGm(JSONObject json) {
-		if (Messenger.getActionFromJson(json).equals("end")) {
+		String action = json.getString("action");
+
+		if (action.equals("end")) {
 			shouldWork = false;
 
 			try {
@@ -192,11 +194,72 @@ public class WorkController {
 			} catch (SendMessageErrorException e) {
 				printExceptionAndEnd(e);
 			}
+
+		} else if (action.equals("move")) {
+			int id = plCommunicator.getPlayerIdFromJson(json);
+
+			try {
+				plCommunicator.sendMsgToPlayerWithId(id, json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else if (action.equals("pick-up")) {
+			int id = plCommunicator.getPlayerIdFromJson(json);
+
+			try {
+				plCommunicator.sendMsgToPlayerWithId(id, json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else if (action.equals("drop")) {
+			int id = plCommunicator.getPlayerIdFromJson(json);
+
+			try {
+				plCommunicator.sendMsgToPlayerWithId(id, json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else {
+			System.err.println(TAG + "received message with wrong action");
 		}
 	}
 
 	private void reactToMsgFromPlayerWithId(int id, JSONObject json) {
+		String action = json.getString("action");
 
+		if (action.equals("move")) {
+			json.put("id", id);
+
+			try {
+				gmCommunicator.sendMessage(json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else if (action.equals("pick-up")) {
+			json.put("id", id);
+
+			try {
+				gmCommunicator.sendMessage(json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else if (action.equals("drop")) {
+			json.put("id", id);
+
+			try {
+				gmCommunicator.sendMessage(json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else {
+			System.err.println(TAG+ "received message with wrong action");
+		}
 	}
 
 	private void printExceptionAndEnd(Exception e) {

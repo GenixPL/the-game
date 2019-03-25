@@ -2,10 +2,7 @@ package com.pwse.gamemaster.controllers;
 
 import com.pwse.gamemaster.controllers.helpers.BoardChecker;
 import com.pwse.gamemaster.models.GameData;
-import com.pwse.gamemaster.models.exceptions.CordsOutsideBoardException;
-import com.pwse.gamemaster.models.exceptions.EnemyAreaException;
-import com.pwse.gamemaster.models.exceptions.PlayerPositionException;
-import com.pwse.gamemaster.models.exceptions.TwoPiecesPickedException;
+import com.pwse.gamemaster.models.exceptions.*;
 import com.pwse.gamemaster.models.goal.Goal;
 import com.pwse.gamemaster.models.board.BoardDimensions;
 import com.pwse.gamemaster.models.piece.Piece;
@@ -71,21 +68,28 @@ public class BoardController {
 		BoardPrinter.print(bDim, players, pieces, goals);
 	}
 
+	public boolean canPlayerMoveTo(int playerId, int posX, int posY) {
+		try {
+			BoardChecker.canPlayerMoveTo(posX, posY, players.get(playerId), bDim, players);
+			return true;
+
+		} catch (CordsOutsideBoardException e) {
+			return false;
+
+		} catch (EnemyAreaException e) {
+			return false;
+
+		} catch (PlayerPositionException e) {
+			return false;
+		}
+	}
+
 	public void movePlayerTo(int playerId, int posX, int posY) {
 		try {
 			BoardChecker.canPlayerMoveTo(posX, posY, players.get(playerId), bDim, players);
 
-		} catch (CordsOutsideBoardException e) {
-			//TODO: send message
-			return;
-
-		} catch (EnemyAreaException e) {
-			//TODO: send message
-			return;
-
-		} catch (PlayerPositionException e) {
-			//TODO: send message
-			return;
+		} catch (Exception e) {
+			//ignore it, because it should be checked before
 		}
 
 		//move piece if he has such
@@ -99,39 +103,79 @@ public class BoardController {
 		players.get(playerId).moveTo(posX, posY);
 	}
 
-	public void pickUpPiece(int playerId) {
+	public boolean canPlayerPickUpPiece(int playerId) {
 		int posX = players.get(playerId).getPosX();
 		int posY = players.get(playerId).getPosY();
 
+		try {
+			if (BoardChecker.isPieceAtPosition(posX, posY, pieces, bDim) == -1) {
+				return false;
+			}
+		} catch (CordsOutsideBoardException e) {
+			return false;
+		}
+
+		if (players.get(playerId).hasPiece()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public void pickUpPieceByPlayerWithId(int playerId) {
+		int posX = players.get(playerId).getPosX();
+		int posY = players.get(playerId).getPosY();
 		int pieceId = -1;
+
 		try {
 			pieceId = BoardChecker.isPieceAtPosition(posX, posY, pieces, bDim);
 		} catch (CordsOutsideBoardException e) {
-			//TODO: message
-			return;
+			//ignore it, because it should be checked before
 		}
 
-		if (pieceId > 0) {
-			//there is a piece to pick up
-			try {
-				players.get(playerId).pickPiece(pieceId);
-			} catch (TwoPiecesPickedException e) {
-				//TODO: message
-				return;
-			}
-
-		} else {
-			//TODO: message
-			return;
+		try {
+			players.get(playerId).pickPiece(pieceId);
+		} catch (TwoPiecesPickedException e) {
+			//ignore it, because it should be checked before
 		}
 	}
 
-	public void dropPiece(int playerId) {
-		//TODO
-		//TODO: can't drop piece if other is at the same position
-		//simple implementation must be changed
+	public boolean canPlayerWithIdDropPiece(int playerId) {
+		int posX = players.get(playerId).getPosX();
+		int posY = players.get(playerId).getPosY();
+
+		if (!players.get(playerId).hasPiece()) {
+			return false;
+		}
+
+		try {
+			if (BoardChecker.isPieceAtPosition(posX, posY, pieces, bDim) != -1) {
+				return false;
+			}
+		} catch (CordsOutsideBoardException e) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public void dropPieceByPlayerWithId(int playerId) {
+		int pieceId = players.get(playerId).getPieceId();
+
+		for (int i = 0; i < pieces.size(); i++) {
+			if (pieces.get(i).getId() == pieceId) {
+				pieces.remove(i);
+			}
+		}
+
+		try {
+			players.get(playerId).dropPiece();
+		} catch (NoPieceToDropException e) {
+			//ignore it, it should be check earlier
+		}
+
 		for (Goal g : goals) {
-			if (g.getPosX() == players.get(playerId).getPosX() && g.getPosY() == players.get(playerId).getPosY() && players.get(playerId).hasPiece()) {
+			if (g.getPosX() == players.get(playerId).getPosX() && g.getPosY() == players.get(playerId).getPosY()) {
 				if (players.get(playerId).getTeamColor().equals(TeamColor.red)) {
 					redTeam.addPoint();
 				} else {
@@ -164,7 +208,7 @@ public class BoardController {
 
 
 
-	private void addPlayers() { //TODO: this will be change due to the algo in which players are distributed
+	private void addPlayers() { //TODO: this will be change due to the algo in which players are distributed or not
 		for (int i = 0; i < numOfPlayers; i++) {
 			if (i % 2 == 0) {
 				Player newPlayer = new Player(i, TeamColor.blue, blueTeam.getNumOfPlayers(), bDim.getHeight() - 1);

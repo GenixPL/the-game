@@ -28,6 +28,15 @@ public class BoardChecker {
 		return true;
 	}
 
+	/**
+	 * Function checks if there is a piece at given position and return its id or -1.
+	 * @param posX
+	 * @param posY
+	 * @param pieces
+	 * @param dim
+	 * @return piece id or -1 if there is no piece
+	 * @throws CordsOutsideBoardException
+	 */
 	public static int isPieceAtPosition(
 			int posX,
 			int posY,
@@ -82,7 +91,9 @@ public class BoardChecker {
 			}
 		}
 
-		//TODO: check if new location is one step from current
+		if (posX < player.getPosX() - 1 || posX > player.getPosX() + 1 || posY < player.getPosY() - 1 || posY > player.getPosY() + 1) {
+			return true;
+		}
 
 		return true;
 	}

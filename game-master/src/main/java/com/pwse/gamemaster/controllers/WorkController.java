@@ -1,6 +1,5 @@
 package com.pwse.gamemaster.controllers;
 
-import com.pwse.gamemaster.controllers.helpers.BoardChecker;
 import com.pwse.gamemaster.controllers.helpers.Messenger;
 import com.pwse.gamemaster.models.ConnectionData;
 import com.pwse.gamemaster.models.GameData;
@@ -8,7 +7,6 @@ import com.pwse.gamemaster.models.exceptions.CloseConnectionFailException;
 import com.pwse.gamemaster.models.exceptions.OpenConnectionFailException;
 import com.pwse.gamemaster.models.exceptions.ReadMessageErrorException;
 import com.pwse.gamemaster.models.exceptions.SendMessageErrorException;
-import com.pwse.gamemaster.view.BoardPrinter;
 import org.json.JSONObject;
 
 
@@ -67,19 +65,13 @@ public class WorkController {
 				reactToMsg(json);
 
 			} catch (ReadMessageErrorException e) {
-				System.err.println(e.getMessage());
+				printExceptionAndEnd(e);
 			}
 
 			bController.printBoard();
 		}
 
-		//send message informing that game has ended
-		try {
-			cController.sendMessage(Messenger.createMsgWithAction("end"));
-		} catch (SendMessageErrorException e) {
-			System.err.println(TAG + e.getMessage());
-		}
-
+		sendEndOfGameMsg();
 
 		System.out.println(TAG + "stopping work");
 		stop();
@@ -130,8 +122,80 @@ public class WorkController {
 		}
 	}
 
-	private void reactToMsg(JSONObject json) {
+	private void sendEndOfGameMsg() {
+		try {
+			cController.sendMessage(Messenger.createMsgWithAction("end"));
+		} catch (SendMessageErrorException e) {
+			System.err.println(TAG + e.getMessage());
+		}
+	}
 
+	private void reactToMsg(JSONObject json) {
+		String action = json.getString("action");
+
+		if (action.equals("move")) {
+			int id = json.getInt("id");
+			int x = json.getInt("x");
+			int y = json.getInt("y");
+
+			if (bController.canPlayerMoveTo(id, x, y)) {
+				bController.movePlayerTo(id, x, y);
+				json.put("approved", true);
+
+			} else {
+				json.put("approved", false);
+			}
+
+			try {
+				cController.sendMessage(json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else if (action.equals("pick-up")) {
+			int id = json.getInt("id");
+
+			if (bController.canPlayerPickUpPiece(id)) {
+				bController.pickUpPieceByPlayerWithId(id);
+				json.put("approved", true);
+
+
+			} else {
+				json.put("approved", false);
+			}
+
+			try {
+				cController.sendMessage(json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else if (action.equals("drop")) {
+			int id = json.getInt("id");
+
+			if (bController.canPlayerWithIdDropPiece(id)) {
+				bController.dropPieceByPlayerWithId(id);
+				json.put("approved", true);
+
+			} else {
+				json.put("approved", false);
+			}
+
+			try {
+				cController.sendMessage(json);
+			} catch (SendMessageErrorException e) {
+				printExceptionAndEnd(e);
+			}
+
+		} else {
+			System.err.println(TAG + "received message with wrong action");
+		}
+	}
+
+	private void printExceptionAndEnd(Exception e) {
+		System.err.println(TAG + e.getMessage());
+		e.printStackTrace();
+		System.exit(-1);
 	}
 
 }

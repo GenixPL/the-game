@@ -4,6 +4,7 @@ package com.pwse.player.controllers;
 
 import com.pwse.player.models.BoardDimensions;
 import com.pwse.player.models.Exceptions.WrongMoveException;
+import com.pwse.player.models.Position;
 
 public class PlayerController {
 
@@ -17,20 +18,24 @@ public class PlayerController {
 		this.hasPiece = false;
 	}
 
-	public void moveUp() throws WrongMoveException {
-		mController.moveUp();
+	public void moveTo(Position pos) throws WrongMoveException {
+		mController.moveTo(pos);
 	}
 
-	public void moveDown() throws WrongMoveException {
-		mController.moveDown();
+	public Position getMoveUpCords() throws WrongMoveException {
+		return mController.getMoveUpCords();
 	}
 
-	public void moveLeft() throws WrongMoveException {
-		mController.moveLeft();
+	public Position getMoveDownCords() throws WrongMoveException {
+		return mController.getMoveDownCords();
 	}
 
-	public void moveRight() throws WrongMoveException {
-		mController.moveRight();
+	public Position getMoveLeftCords() throws WrongMoveException {
+		return mController.getMoveLeftCords();
+	}
+
+	public Position getMoveRightCords() throws WrongMoveException {
+		return mController.getMoveRightCords();
 	}
 
 	public void pickUpPiece() {

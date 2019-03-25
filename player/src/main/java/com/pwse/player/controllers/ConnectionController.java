@@ -25,6 +25,7 @@ public class ConnectionController {
 	private Socket socket;
 	private DataInputStream reader;
 	private DataOutputStream writer;
+	private String lastAction = "lack";
 
 
 
@@ -81,6 +82,7 @@ public class ConnectionController {
 
 		try {
 			writer.writeUTF(json.toString());
+			lastAction = json.getString("action");
 
 		} catch (IOException e) {
 			System.err.println(TAG + e.getMessage());
