@@ -1,6 +1,7 @@
 package com.pwse.player.controllers;
 
 import com.pwse.player.controllers.helpers.InfoSingleton;
+import com.pwse.player.controllers.helpers.Messenger;
 import com.pwse.player.models.BoardDimensions;
 import com.pwse.player.models.ConnectionData;
 import com.pwse.player.models.Exceptions.CloseConnectionFailException;
@@ -21,6 +22,7 @@ public class WorkController {
 	ConnectionController cController;
 	PlayerController pController;
 
+	private boolean shouldWork = true;
 
 
 	public WorkController(ConnectionData connectionData, BoardDimensions boardDimensions) {
@@ -42,7 +44,6 @@ public class WorkController {
 	}
 
 
-
 	private void start() {
 		try {
 			cController.connect();
@@ -50,7 +51,6 @@ public class WorkController {
 			System.exit(-1);
 		}
 
-		System.out.println(TAG + "starting work");
 		doWork();
 	}
 
@@ -67,30 +67,37 @@ public class WorkController {
 	}
 
 	private void doWork() {
-		while (true) {
-			if (cController.isMessageWaiting()) {
-				try {
-					String msg = cController.getMessage();
-					System.out.println(TAG + "new message from gm: " + msg);
+		System.out.println(TAG + "starting work");
 
-					JSONObject json = new JSONObject(msg);
-					if (json.getString("action").equals("end")) {
-						break;
-					}
-
-				} catch (ReadMessageErrorException e) {
-					System.err.println(e.getMessage());
-				}
-			}
-
+		//read until "start" message appears
+		String msg = "";
+		while (!msg.equals("start")) {
 			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
+				msg = Messenger.getActionFromJson(cController.getMessage());
+			} catch (ReadMessageErrorException e) {
 				e.printStackTrace();
 			}
 		}
 
+		//work until "end" message appears
+		while (shouldWork) {
+			JSONObject json;
+			try {
+				json = cController.getMessage();
+				reactToMsg(json);
+			} catch (ReadMessageErrorException e) {
+				System.err.println(e.getMessage());
+			}
+		}
+
+		System.out.println(TAG + "ending work");
 		stop();
+	}
+
+	private void reactToMsg(JSONObject json) {
+		if (Messenger.getActionFromJson(json).equals("end")) {
+			shouldWork = false;
+		}
 	}
 
 	private void exchangeInfo() {

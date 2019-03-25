@@ -64,8 +64,7 @@ public class ConnectionController {
 		}
 	}
 
-
-	public String getMessage() throws ReadMessageErrorException {
+	public JSONObject getMessage() throws ReadMessageErrorException {
 		String msg = null;
 
 		try {
@@ -74,19 +73,7 @@ public class ConnectionController {
 			throw new ReadMessageErrorException();
 		}
 
-		return msg;
-	}
-
-	public boolean isMessageWaiting() {
-		boolean isReady = false;
-
-		try {
-			isReady = (reader.available() != 0);
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-
-		return isReady;
+		return new JSONObject(msg);
 	}
 
 	public void sendMessage(JSONObject json) throws SendMessageErrorException {
