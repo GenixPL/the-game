@@ -1,6 +1,7 @@
 package com.pwse.gamemaster.controllers;
 
 import com.pwse.gamemaster.controllers.helpers.BoardChecker;
+import com.pwse.gamemaster.controllers.helpers.Messenger;
 import com.pwse.gamemaster.models.ConnectionData;
 import com.pwse.gamemaster.models.GameData;
 import com.pwse.gamemaster.models.exceptions.CloseConnectionFailException;
@@ -38,7 +39,6 @@ public class WorkController {
 			System.exit(-1);
 		}
 
-		System.out.println(TAG + "starting work");
 		doWork();
 	}
 
@@ -55,64 +55,45 @@ public class WorkController {
 	}
 
 	private void doWork() {
-		//TODO
+		System.out.println(TAG + "starting work");
+		System.out.println(TAG + "waiting for starting message...");
 		bController.printBoard();
+
+		//read until "start" message appears
 		String msg = "";
 		while (!msg.equals("start")) {
 			try {
-				JSONObject object = new JSONObject(cController.getMessage());
-				msg = object.getString("action");
+				msg = Messenger.getActionFromJson(cController.getMessage());
 			} catch (ReadMessageErrorException e) {
 				e.printStackTrace();
 			}
 		}
 
-
-		int i = 0;
+		//work until game has ended
 		while (!bController.isGameEnded()) {
-			if (i < 12) {
-				bController.movePlayerTo(1, 0, i++); //move down
-
-				JSONObject json = new JSONObject();
-				json.put("action", "move-down");
-				try {
-					cController.sendMessage(json);
-				} catch (SendMessageErrorException e) {
-					System.err.println(e.getMessage());
-				}
-
-			} else {
-				bController.movePlayerTo(1, 0, (24 - i++)); //move up
-
-				JSONObject json = new JSONObject();
-				json.put("action", "move-up");
-				try {
-					cController.sendMessage(json);
-				} catch (SendMessageErrorException e) {
-					System.err.println(e.getMessage());
-				}
+			JSONObject json;
+			try {
+				json = cController.getMessage();
+				reactToMsg(json);
+			} catch (ReadMessageErrorException e) {
+				System.err.println(e.getMessage());
 			}
-			bController.dropPiece(1);
-			bController.pickUpPiece(1);
 
 			bController.printBoard();
-
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 		}
 
-		JSONObject json = new JSONObject();
-		json.put("action", "end");
+		//send message informing that game has ended
 		try {
-			cController.sendMessage(json);
+			cController.sendMessage(Messenger.createMsgWithAction("end"));
 		} catch (SendMessageErrorException e) {
 			System.err.println(TAG + e.getMessage());
 		}
 
 		stop();
+	}
+
+	private void reactToMsg(JSONObject json) {
+
 	}
 
 }
