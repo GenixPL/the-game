@@ -7,6 +7,7 @@ import com.pwse.gamemaster.models.exceptions.CloseConnectionFailException;
 import com.pwse.gamemaster.models.exceptions.OpenConnectionFailException;
 import com.pwse.gamemaster.models.exceptions.ReadMessageErrorException;
 import com.pwse.gamemaster.models.exceptions.SendMessageErrorException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -95,7 +96,7 @@ public class WorkController {
 
 			try {
 				System.out.println(TAG + "sending player-info for player with id: " + i);
-				JSONObject answerJson = bController.getInfoOfPlayerWithId(i);
+				JSONObject answerJson = bController.getInfoAboutPlayerWithId(i);
 				answerJson.put("action", "player-info");
 				cController.sendMessage(answerJson);
 
@@ -134,61 +135,137 @@ public class WorkController {
 		String action = json.getString("action");
 
 		if (action.equals("move")) {
-			int id = json.getInt("id");
-			int x = json.getInt("x");
-			int y = json.getInt("y");
-
-			if (bController.canPlayerMoveTo(id, x, y)) {
-				bController.movePlayerTo(id, x, y);
-				json.put("approved", true);
-
-			} else {
-				json.put("approved", false);
-			}
-
-			try {
-				cController.sendMessage(json);
-			} catch (SendMessageErrorException e) {
-				printExceptionAndEnd(e);
-			}
+			handleMoveAction(json);
 
 		} else if (action.equals("pick-up")) {
-			int id = json.getInt("id");
-
-			if (bController.canPlayerPickUpPiece(id)) {
-				bController.pickUpPieceByPlayerWithId(id);
-				json.put("approved", true);
-
-
-			} else {
-				json.put("approved", false);
-			}
-
-			try {
-				cController.sendMessage(json);
-			} catch (SendMessageErrorException e) {
-				printExceptionAndEnd(e);
-			}
+			handlePickUpAction(json);
 
 		} else if (action.equals("drop")) {
-			int id = json.getInt("id");
+			handleDropAction(json);
 
-			if (bController.canPlayerWithIdDropPiece(id)) {
-				bController.dropPieceByPlayerWithId(id);
-				json.put("approved", true);
+		} else if (action.equals("discover")) {
+			handleDiscoverAction(json);
 
-			} else {
-				json.put("approved", false);
-			}
+		} else if (action.equals("test-piece")) {
+			handleTestPiece(json);
 
-			try {
-				cController.sendMessage(json);
-			} catch (SendMessageErrorException e) {
-				printExceptionAndEnd(e);
-			}
+		} else if (action.equals("destroy-piece")) {
+			handledDestroyPiece(json);
 
 		} else {
 			System.err.println(TAG + "received message with wrong action");
+		}
+	}
+
+	private void handleMoveAction(JSONObject json) {
+		int id = json.getInt("id");
+		int x = json.getInt("x");
+		int y = json.getInt("y");
+
+		if (bController.canPlayerMoveTo(id, x, y)) {
+			bController.movePlayerTo(id, x, y);
+			json.put("approved", true);
+			json.put("manhattan", bController.getManhattanDistanceToNearestPiece(x, y));
+			json.put("field", bController.getFieldInfo(x, y));
+
+		} else {
+			json.put("approved", false);
+			json.put("manhattan", -1);
+			json.put("field", new JSONArray());
+		}
+
+		try {
+			cController.sendMessage(json);
+		} catch (SendMessageErrorException e) {
+			printExceptionAndEnd(e);
+		}
+	}
+
+	private void handlePickUpAction(JSONObject json) {
+		int id = json.getInt("id");
+
+		if (bController.canPlayerPickUpPiece(id)) {
+			bController.pickUpPieceByPlayerWithId(id);
+			json.put("approved", true);
+
+
+		} else {
+			json.put("approved", false);
+		}
+
+		try {
+			cController.sendMessage(json);
+		} catch (SendMessageErrorException e) {
+			printExceptionAndEnd(e);
+		}
+	}
+
+	private void handleDropAction(JSONObject json) {
+		int id = json.getInt("id");
+
+		if (bController.canPlayerWithIdDropPiece(id)) {
+			bController.dropPieceByPlayerWithId(id);
+			json.put("approved", true);
+
+		} else {
+			json.put("approved", false);
+		}
+
+		try {
+			cController.sendMessage(json);
+		} catch (SendMessageErrorException e) {
+			printExceptionAndEnd(e);
+		}
+	}
+
+	private void handleDiscoverAction(JSONObject json) {
+		int id = json.getInt("id");
+
+		json.put("fields", bController.getDiscoveryInfoForPlayerWithId(id));
+
+		try {
+			cController.sendMessage(json);
+		} catch (SendMessageErrorException e) {
+			printExceptionAndEnd(e);
+		}
+	}
+
+	private void handleTestPiece(JSONObject json) {
+		int id = json.getInt("id");
+
+		int p;
+
+		if ((p = bController.testPieceByPlayerWithId(id)) != -1) {
+			json.put("approved", true);
+			json.put("is-correct", p);
+
+		} else {
+			json.put("approved", false);
+			json.put("is-correct", -1);
+		}
+
+		try {
+			cController.sendMessage(json);
+		} catch (SendMessageErrorException e) {
+			printExceptionAndEnd(e);
+		}
+	}
+
+	private void handledDestroyPiece(JSONObject json) {
+		int id = json.getInt("id");
+
+		if (bController.canPlayerWithIdDestoryPiece(id)) {
+			bController.destroyPieceByPlayerWithId(id);
+			json.put("approved", true);
+
+		} else {
+			json.put("approved", false);
+		}
+
+		try {
+			cController.sendMessage(json);
+		} catch (SendMessageErrorException e) {
+			printExceptionAndEnd(e);
 		}
 	}
 

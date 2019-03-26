@@ -24,12 +24,15 @@ public class BoardPrinter {
 		System.out.println();
 
 		//print upper line
-		printHorizontalLine(dim.getWidth());
+		printHorizontalLine(dim.getWidth(), Colors.redTeam);
 
 		for (int y = 0; y < dim.getHeight(); y++) {
 			//print team areas separators
-			if (y == (dim.getHeightOfTeamArea()) || y == (dim.getHeight() - dim.getHeightOfTeamArea())) {
-				printHorizontalLine(dim.getWidth()); //TODO: it's possible to print vertical lines in those area's in team colors
+			if (y == (dim.getHeightOfTeamArea())) {
+				printHorizontalLine(dim.getWidth(), Colors.redTeam);
+
+			} else if (y == (dim.getHeight() - dim.getHeightOfTeamArea())) {
+				printHorizontalLine(dim.getWidth(), Colors.blueTeam);
 			}
 
 			//print board itself
@@ -58,7 +61,7 @@ public class BoardPrinter {
 		}
 
 		//print bottom line
-		printHorizontalLine(dim.getWidth());
+		printHorizontalLine(dim.getWidth(), Colors.blueTeam);
 	}
 
 
@@ -93,12 +96,12 @@ public class BoardPrinter {
 		return null;
 	}
 
-	private static void printHorizontalLine(int length) {
-		System.out.print("\t|");
+	private static void printHorizontalLine(int length, String color) {
+		System.out.print(color + "\t|");
 		for (int x = 0; x < length; x++) {
 			System.out.print("-");
 		}
-		System.out.print("|\n");
+		System.out.print("|\n" + Colors.ANSI_RESET);
 	}
 
 	private static String getBackgroundPrintString() {

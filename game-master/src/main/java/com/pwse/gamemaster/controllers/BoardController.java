@@ -10,6 +10,7 @@ import com.pwse.gamemaster.models.player.Player;
 import com.pwse.gamemaster.models.team.Team;
 import com.pwse.gamemaster.models.team.TeamColor;
 import com.pwse.gamemaster.view.BoardPrinter;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -187,17 +188,17 @@ public class BoardController {
 		checkScores();
 	}
 
-	public JSONObject getInfoOfPlayerWithId(int id) {
+	public JSONObject getInfoAboutPlayerWithId(int playerId) {
 		JSONObject json = null;
 
 		for (Player pl : players) {
-			if (pl.getId() == id) {
+			if (pl.getId() == playerId) {
 				JSONObject positionJson = new JSONObject();
 				positionJson.put("x", pl.getPosX());
 				positionJson.put("y", pl.getPosY());
 
 				json = new JSONObject();
-				json.put("id", id);
+				json.put("id", playerId);
 				json.put("team", pl.getTeamColor());
 				json.put("position", positionJson);
 			}
@@ -205,6 +206,103 @@ public class BoardController {
 
 		return json;
 	}
+
+	public JSONArray getDiscoveryInfoForPlayerWithId(int playerId) {
+		JSONArray array = new JSONArray();
+		int x = players.get(playerId).getPosX();
+		int y = players.get(playerId).getPosY();
+
+		array.put(getFieldInfo(x - 1, y - 1));
+		array.put(getFieldInfo(x, y - 1));
+		array.put(getFieldInfo(x + 1, y - 1));
+
+		array.put(getFieldInfo(x - 1, y));
+		array.put(getFieldInfo(x, y));
+		array.put(getFieldInfo(x + 1, y));
+
+		array.put(getFieldInfo(x - 1, y + 1));
+		array.put(getFieldInfo(x, y + 1));
+		array.put(getFieldInfo(x + 1, y + 1));
+
+		return array;
+	}
+
+	public JSONObject getFieldInfo(int x, int y) {
+		JSONObject toReturn = new JSONObject();
+		toReturn.put("x", x);
+		toReturn.put("y", y);
+
+		JSONArray innerArray = new JSONArray();
+
+		if (isCordOnBoard(x, y)) {
+			boolean isEmpty = true;
+
+			for (Piece p : pieces) {
+				if (p.getPosX() == x && p.getPosY() == y) {
+					innerArray.put("piece");
+					isEmpty = false;
+				}
+			}
+
+			for (Player pl : players) {
+				if (pl.getPosX() == x && pl.getPosY() == y) {
+					innerArray.put("player");
+					isEmpty = false;
+				}
+			}
+
+			for (Goal g : goals) {
+				if (g.getPosX() == x && g.getPosY() == y) {
+					innerArray.put("goal");
+					isEmpty = false;
+				}
+			}
+
+			if (y < (bDim.getHeightOfTeamArea() - 1)) { //TODO: it may be wrong
+				innerArray.put("red-area");
+			}
+
+			if (y < (bDim.getHeight() - bDim.getHeightOfTeamArea() - 1)) { //TODO: it may be wrong
+				innerArray.put("blue-area");
+			}
+
+			if (isEmpty) {
+				innerArray.put("non");
+			}
+
+		} else {
+			innerArray.put("outside");
+		}
+
+		toReturn.put("field", innerArray);
+
+		return toReturn;
+	}
+
+	/**
+	 * Gives information about piece hold by player with given id.
+	 *
+	 * @param playerId
+	 * @return 0 - sham
+	 *         1 - proper piece
+	 *         -1 - can't check
+	 */
+	public int testPieceByPlayerWithId(int playerId) {
+		//TODO
+
+		return 0;
+	}
+
+	public boolean canPlayerWithIdDestoryPiece(int playerId) {
+		//TODO
+
+		return false;
+	}
+
+	public void destroyPieceByPlayerWithId(int playerId) {
+		//TODO
+	}
+
 
 
 
@@ -263,5 +361,23 @@ public class BoardController {
 			System.out.println("=== BLUE TEAM WON ===");
 			isGameEnded = true;
 		}
+	}
+
+	private boolean isCordOnBoard(int x, int y) {
+		return (x >= 0 && x < bDim.getWidth()) && (y >= 0 && y < bDim.getHeight());
+	}
+
+	public int getManhattanDistanceToNearestPiece(int plX, int plY) {
+		int smallest = 0;
+
+		for (Piece pc : pieces) {
+			int dist = Math.abs(plX - pc.getPosX()) + Math.abs(plY - pc.getPosY());
+
+			if (dist < smallest) {
+				smallest = dist;
+			}
+		}
+
+		return smallest;
 	}
 }
