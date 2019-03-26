@@ -254,7 +254,7 @@ public class WorkController {
 	private void handledDestroyPiece(JSONObject json) {
 		int id = json.getInt("id");
 
-		if (bController.canPlayerWithIdDestoryPiece(id)) {
+		if (bController.canPlayerWithIdDestroyPiece(id)) {
 			bController.destroyPieceByPlayerWithId(id);
 			json.put("approved", true);
 

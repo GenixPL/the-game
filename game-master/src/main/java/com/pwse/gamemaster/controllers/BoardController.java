@@ -23,6 +23,7 @@ import java.util.TimerTask;
  */
 public class BoardController {
 
+	private final String TAG = this.getClass().getSimpleName() + ": ";
 	private static final int MAX_NUM_OF_PIECES = 6;
 
 	private BoardDimensions bDim;
@@ -288,23 +289,81 @@ public class BoardController {
 	 *         -1 - can't check
 	 */
 	public int testPieceByPlayerWithId(int playerId) {
-		//TODO
+		for (Player pl : players) {
+			if (pl.getId() == playerId) {
+				if (pl.hasPiece()) {
+					return getPieceInfo(pl.getPieceId());
+
+				} else {
+					return -1;
+				}
+			}
+		}
 
 		return 0;
 	}
 
-	public boolean canPlayerWithIdDestoryPiece(int playerId) {
-		//TODO
+	public boolean canPlayerWithIdDestroyPiece(int playerId) {
+		for (Player pl : players) {
+			if (pl.getId() == playerId) {
+				return pl.hasPiece();
+			}
+		}
 
 		return false;
 	}
 
 	public void destroyPieceByPlayerWithId(int playerId) {
-		//TODO
+		int pcId;
+
+		for (Player pl : players) {
+			if (pl.getId() == playerId) {
+				pcId = pl.getPieceId();
+				destroyPiece(pcId);
+
+				try {
+					pl.dropPiece();
+				} catch (NoPieceToDropException e) {
+					System.err.println(TAG + e.getMessage());
+				}
+			}
+		}
 	}
 
 
 
+	/**
+	 * Returns piece's sham status
+	 * @param id
+	 * @return 0 - sham
+	 * 	       1 - proper piece
+	 * 	       -1 - can't check
+	 */
+	private int getPieceInfo(int id) {
+		for (Piece pc : pieces) {
+			if (pc.getId() == id) {
+				return pc.isSham() ? 0 : 1;
+			}
+		}
+
+		return -1;
+	}
+
+	private void destroyPiece(int id) {
+		int index = -1;
+
+		for (int i = 0; i < pieces.size(); i++) {
+			if (id == pieces.get(i).getId()) {
+				index = i;
+			}
+		}
+
+		if (index != -1) {
+			pieces.remove(index);
+		} else {
+			System.err.println(TAG + "cannot remove piece with id: " + id + " because it doesn't exist.");
+		}
+	}
 
 	private void addPlayers() { //TODO: this will be change due to the algo in which players are distributed or not
 		for (int i = 0; i < numOfPlayers; i++) {
