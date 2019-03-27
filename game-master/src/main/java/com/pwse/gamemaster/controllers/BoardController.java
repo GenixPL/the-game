@@ -70,7 +70,7 @@ public class BoardController {
 		BoardPrinter.print(bDim, players, pieces, goals);
 	}
 
-	public boolean canPlayerMoveTo(int playerId, int posX, int posY) {
+	public boolean canPlayerWithIdMoveTo(int playerId, int posX, int posY) {
 		try {
 			BoardChecker.canPlayerMoveTo(posX, posY, players.get(playerId), bDim, players);
 			return true;

@@ -162,7 +162,7 @@ public class WorkController {
 		int x = json.getInt("x");
 		int y = json.getInt("y");
 
-		if (bController.canPlayerMoveTo(id, x, y)) {
+		if (bController.canPlayerWithIdMoveTo(id, x, y)) {
 			bController.movePlayerTo(id, x, y);
 			json.put("approved", true);
 			json.put("manhattan", bController.getManhattanDistanceToNearestPiece(x, y));

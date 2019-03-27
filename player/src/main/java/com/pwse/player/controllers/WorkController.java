@@ -7,6 +7,7 @@ import com.pwse.player.models.ConnectionData;
 import com.pwse.player.models.Exceptions.*;
 import com.pwse.player.models.Position;
 import com.pwse.player.models.player.PlayerInfo;
+import javafx.geometry.Pos;
 import org.json.JSONObject;
 
 
@@ -75,6 +76,17 @@ public class WorkController {
 				} catch (WrongMoveException e) {
 					System.err.println(TAG + e.getMessage());
 				}
+
+				if (pos == null) {
+					try {
+						pos = pController.getMoveUpCords();
+					} catch (WrongMoveException e) {
+						e.printStackTrace();
+					}
+				}
+
+				if (pos == null)
+					continue;
 
 				try {
 					cController.sendMessage(createMoveMsg(pos));
@@ -166,7 +178,7 @@ public class WorkController {
 	}
 
 	private JSONObject createMoveMsg(Position pos) {
-		JSONObject json = new JSONObject("move");
+		JSONObject json = new JSONObject();
 		json.put("action", "move");
 		json.put("x", pos.getX());
 		json.put("y", pos.getY());

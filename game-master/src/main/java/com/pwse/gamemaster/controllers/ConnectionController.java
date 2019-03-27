@@ -62,6 +62,7 @@ public class ConnectionController {
 	}
 
 	public JSONObject getMessage() throws ReadMessageErrorException {
+		System.out.println(TAG + "receiving new message");
 		String msg = null;
 
 		try {
@@ -70,11 +71,13 @@ public class ConnectionController {
 			throw new ReadMessageErrorException();
 		}
 
+		System.out.println(TAG + "new message received: " + msg);
+
 		return new JSONObject(msg);
 	}
 
 	public void sendMessage(JSONObject json) throws SendMessageErrorException {
-		System.out.println(TAG + "sending message");
+		System.out.println(TAG + "sending message: " + json.toString());
 
 		try {
 			writer.writeUTF(json.toString());
