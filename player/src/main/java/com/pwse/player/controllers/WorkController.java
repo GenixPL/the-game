@@ -86,7 +86,7 @@ public class WorkController {
 			//TODO: this delay should be moved to GM but due to bugs with threads (as I believe), I will leave it here for now
 			try {
 
-				Thread.sleep(new Random().nextInt(5000) + 1000);
+				Thread.sleep(new Random().nextInt(1000) + 1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

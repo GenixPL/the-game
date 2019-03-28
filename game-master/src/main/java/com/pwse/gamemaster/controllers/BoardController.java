@@ -151,7 +151,7 @@ public class BoardController {
 		}
 
 		try {
-			if (BoardChecker.isPieceAtPosition(posX, posY, pieces, bDim) != -1) {
+			if (BoardChecker.isPieceAtPosition(posX, posY, pieces, bDim) == -1) {
 				return false;
 			}
 		} catch (CordsOutsideBoardException e) {
