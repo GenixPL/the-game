@@ -90,7 +90,7 @@ public class MovementController {
 		if (isInGoalArea(y)) {
 			//TODO: here might be an error if player is in base position by accident - those methods didn't get him there
 			if (!wasInBaseGoalPosition) {
-				Position nextMove = moveToBasePosition(x, y);
+				Position nextMove = moveToBaseGoalPosition(x, y);
 
 				if (team.equals("red")) {
 					if (nextMove.getX() == 0 && nextMove.getY() == 0) {
@@ -126,7 +126,7 @@ public class MovementController {
 		if (isInPieceArea(y)) {
 			//TODO: here might be an error if player is in base position by accident - those methods didn't get him there
 			if (!wasInBasePiecePosition) {
-				Position nextMove = moveToBasePosition(x, y);
+				Position nextMove = moveToBasePiecePosition(x, y);
 
 				if (team.equals("red")) {
 					if (nextMove.getX() == 0 && nextMove.getY() == hota) {
@@ -152,6 +152,9 @@ public class MovementController {
 	}
 
 	public Position getRandomMove(int a) {
+		int currentX = InfoSingleton.getInstance().getPlayerInfo().getPosX();
+		int currentY = InfoSingleton.getInstance().getPlayerInfo().getPosY();
+
 		if (a == 0) { //move up or down if cannot up
 			try {
 				return getMoveUpCords();
@@ -197,7 +200,7 @@ public class MovementController {
 		}
 
 		System.err.println(TAG + "function getRandomMove went to far, CHECK IT!");
-		return new Position(0, 0); //it should not come so far
+		return new Position(currentX, currentY); //it should not come so far
 	}
 
 
@@ -214,34 +217,44 @@ public class MovementController {
 		}
 	}
 
-//	private Position moveToBasePiecePosition(int posX, int posY) {
-//		String team = InfoSingleton.getInstance().getPlayerInfo().getTeam();
-//
-//		if (team.equals("red")) {
-//			//moving to (0, hota)
-//			if (posX != 0) {
-//				System.out.println(TAG + "\t\tmove left");
-//				return new Position(posX - 1, posY); //move left
-//
-//			} else {
-//
-//				System.out.println(TAG + "\t\tmove down");
-//				return new Position(posX, posY + 1); //move down
-//			}
-//
-//		} else { //blue team
-//			//moving to (0, h - hota - 1)
-//			if (posX != 0) {
-//				System.out.println(TAG + "\t\tmove left");
-//				return new Position(posX - 1, posY); //move left
-//
-//			} else {
-//
-//				System.out.println(TAG + "\t\tmove up");
-//				return new Position(posX, posY - 1); //move up
-//			}
-//		}
-//	}
+	private Position moveToBasePiecePosition(int posX, int posY) {
+		String team = InfoSingleton.getInstance().getPlayerInfo().getTeam();
+		int hota = InfoSingleton.getInstance().getBoardInfo().getDimensions().getHeightOfTeamArea();
+		int h = InfoSingleton.getInstance().getBoardInfo().getDimensions().getHeight();
+
+		if (team.equals("red")) {
+			//moving to (0, hota)
+			if (posX != 0) {
+				System.out.println(TAG + "\t\tmove left");
+				return new Position(posX - 1, posY); //move left
+
+			} else {
+				if (posY < hota) {
+					System.out.println(TAG + "\t\tmove down");
+					return new Position(posX, posY + 1); //move down
+				} else {
+					System.out.println(TAG + "\t\tmove up");
+					return new Position(posX, posY - 1); //move down
+				}
+			}
+
+		} else { //blue team
+			//moving to (0, h - hota - 1)
+			if (posX != 0) {
+				System.out.println(TAG + "\t\tmove left");
+				return new Position(posX - 1, posY); //move left
+
+			} else {
+				if (posY > h - hota - 1) {
+					System.out.println(TAG + "\t\tmove up");
+					return new Position(posX, posY - 1); //move up
+				} else {
+					System.out.println(TAG + "\t\tmove down");
+					return new Position(posX, posY + 1); //move down
+				}
+			}
+		}
+	}
 
 	private boolean isInPieceArea(int y) {
 		int h = InfoSingleton.getInstance().getBoardInfo().getDimensions().getHeight();
@@ -275,6 +288,10 @@ public class MovementController {
 			}
 		}
 
+		if (!isPlayerMovedByOneField(posX, posY)) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -303,7 +320,7 @@ public class MovementController {
 		}
 	}
 
-	private Position moveToBasePosition(int posX, int posY) {
+	private Position moveToBaseGoalPosition(int posX, int posY) {
 		String team = InfoSingleton.getInstance().getPlayerInfo().getTeam();
 		int h = InfoSingleton.getInstance().getBoardInfo().getDimensions().getHeight();
 
@@ -389,5 +406,22 @@ public class MovementController {
 		}
 	}
 
+	private boolean isPlayerMovedByOneField(int newX, int newY) {
+		int curX = InfoSingleton.getInstance().getPlayerInfo().getPosX();
+		int curY = InfoSingleton.getInstance().getPlayerInfo().getPosY();
 
+
+		if (newX == curX - 1 && newY == curY) {
+			return true;
+		} else if (newX == curX + 1 && newY == curY) {
+			return true;
+		} else if (newX == curX && newY  == curY - 1) {
+			return true;
+		} if (newX == curX && newY == curY + 1) {
+			return true;
+		} else {
+			System.err.println(TAG + "player wants to perform wrong move (not in one of four directions)");
+			return false;
+		}
+	}
 }

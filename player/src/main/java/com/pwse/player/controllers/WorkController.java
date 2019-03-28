@@ -23,6 +23,7 @@ public class WorkController {
 	private BoardDimensions bDim;
 
 	private boolean shouldWork = true;
+	private boolean shouldTryRandomMove = false;
 
 
 	public WorkController(ConnectionData connectionData, BoardDimensions boardDimensions) {
@@ -67,8 +68,17 @@ public class WorkController {
 
 		//work until "end" message appears
 		while (shouldWork) {
-			JSONObject decision = getJsonWithDecision();
-			cController.sendMessage(decision);
+
+			if (shouldTryRandomMove) {
+				System.out.println(TAG + "making random move");
+				cController.sendMessage(createMoveMsg(pController.getNextMovePossibleRandom()));
+
+				shouldTryRandomMove = false;
+
+			} else {
+				JSONObject decision = getJsonWithDecision();
+				cController.sendMessage(decision);
+			}
 
 			try {
 				JSONObject response;
@@ -82,8 +92,8 @@ public class WorkController {
 			//TODO: this delay should be moved to GM but due to bugs with threads (as I believe), I will leave it here for now
 			try {
 
-//				Thread.sleep(new Random().nextInt(1000) + 1000);
-				Thread.sleep(1000);
+				Thread.sleep(new Random().nextInt(1000) + 1000);
+//				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -213,8 +223,7 @@ public class WorkController {
 
 		} else {
 			System.err.println(TAG + "Wrong move");
-			System.out.println(TAG + "making random move");
-			cController.sendMessage(createMoveMsg(pController.getNextMovePossibleRandom()));
+			shouldTryRandomMove = true;
 		}
 	}
 

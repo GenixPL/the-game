@@ -76,7 +76,7 @@ public class PlayerController {
 
 	public Position getNextMovePossibleRandom() {
 		Random random = new Random();
-		int a = random.nextInt(20);
+		int a = random.nextInt(9);
 
 		if (a < 5) {
 			return mController.getRandomMove(a);

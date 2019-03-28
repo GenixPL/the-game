@@ -72,8 +72,7 @@ public class BoardController {
 
 	public boolean canPlayerWithIdMoveTo(int playerId, int posX, int posY) {
 		try {
-			BoardChecker.canPlayerMoveTo(posX, posY, players.get(playerId), bDim, players);
-			return true;
+			return BoardChecker.canPlayerMoveTo(posX, posY, players.get(playerId), bDim, players);
 
 		} catch (CordsOutsideBoardException e) {
 			return false;

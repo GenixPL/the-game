@@ -14,6 +14,8 @@ import java.util.ArrayList;
 
 public class BoardChecker {
 
+	private static final String TAG = "BoardChecker: ";
+
 	private BoardChecker() { }
 
 
@@ -119,11 +121,12 @@ public class BoardChecker {
 			return true;
 		} else if (newX == curX + 1 && newY == curY) {
 			return true;
-		} else if (newX == curX && newY - 1 == curY) {
+		} else if (newX == curX && newY  == curY - 1) {
 			return true;
-		} if (newX == curX && newY + 1 == curY) {
+		} if (newX == curX && newY == curY + 1) {
 			return true;
 		} else {
+			System.err.println(TAG + "player with id: " + player.getId() + " wants to perform wrong move (not in one of four directions)");
 			return false;
 		}
 	}
