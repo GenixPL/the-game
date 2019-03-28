@@ -38,10 +38,10 @@ public class Player {
 
 	public String getPrintString() {
 		if (teamColor.equals(TeamColor.blue)) {
-			return Colors.blueTeam + 'P' + Colors.ANSI_RESET;
+			return Colors.blueTeam + id + Colors.ANSI_RESET;
 
 		} else if (teamColor.equals(TeamColor.red)) {
-			return Colors.redTeam + 'P' + Colors.ANSI_RESET;
+			return Colors.redTeam + id + Colors.ANSI_RESET;
 
 		} else {
 			return Colors.error + ' ' + Colors.ANSI_RESET;

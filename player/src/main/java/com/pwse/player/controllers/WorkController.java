@@ -6,9 +6,9 @@ import com.pwse.player.models.BoardDimensions;
 import com.pwse.player.models.ConnectionData;
 import com.pwse.player.models.Exceptions.*;
 import com.pwse.player.models.Position;
-import com.pwse.player.models.player.PlayerInfo;
-import javafx.geometry.Pos;
 import org.json.JSONObject;
+
+import java.util.Random;
 
 
 /**
@@ -23,7 +23,6 @@ public class WorkController {
 	private BoardDimensions bDim;
 
 	private boolean shouldWork = true;
-
 
 
 	public WorkController(ConnectionData connectionData, BoardDimensions boardDimensions) {
@@ -68,42 +67,54 @@ public class WorkController {
 
 		//work until "end" message appears
 		while (shouldWork) {
-			JSONObject json;
+			JSONObject decision = getJsonWithDecision();
 			try {
-				Position pos = null;
-				try {
-					pos = pController.getMoveDownCords();
-				} catch (WrongMoveException e) {
-					System.err.println(TAG + e.getMessage());
-				}
+				cController.sendMessage(decision);
+			} catch (SendMessageErrorException e) {
+				e.printStackTrace();
+			}
 
-				if (pos == null) {
-					try {
-						pos = pController.getMoveUpCords();
-					} catch (WrongMoveException e) {
-						e.printStackTrace();
-					}
-				}
-
-				if (pos == null)
-					continue;
-
-				try {
-					cController.sendMessage(createMoveMsg(pos));
-				} catch (SendMessageErrorException e) {
-					System.err.println(TAG + e.getMessage());
-				}
-
-				json = cController.getMessage();
-				reactToMsg(json);
+			try {
+				JSONObject response;
+				response = cController.getMessage();
+				reactToMsg(response);
 
 			} catch (ReadMessageErrorException e) {
 				System.err.println(e.getMessage());
 			}
+
+			//TODO: this delay should be moved to GM but due to bugs with threads (as I believe), I will leave it here for now
+			try {
+
+				Thread.sleep(new Random().nextInt(5000) + 1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			System.out.println("\t\t\t===NEXT TURN===");
 		}
 
 		System.out.println(TAG + "ending work");
 		stop();
+	}
+
+	private JSONObject getJsonWithDecision() {
+		if (pController.hasPiece()) {
+			if (cController.isGoalInCurrentPlace()) {
+				return createDropMsg();
+
+			} else {
+				return createMoveMsg(pController.getNextMove());
+			}
+
+		} else { //has no piece
+			if (cController.isPieceInCurrentPlace()) {
+				return createPickUpMsg();
+
+			} else {
+				return createMoveMsg(pController.getNextMove());
+			}
+		}
 	}
 
 	private void reactToMsg(JSONObject json) {
@@ -113,13 +124,13 @@ public class WorkController {
 			shouldWork = false;
 
 		} else if (action.equals("move")) {
-			if (json.getBoolean("approved")) {
-				try {
-					pController.moveTo(new Position(json.getInt("x"), json.getInt("y")));
-				} catch (WrongMoveException e) {
-					//TODO
-				}
-			}
+			handleMoveResponse(json);
+
+		} else if (action.equals("drop")) {
+			handleDropResponse(json);
+
+		} else if (action.equals("pick-up")) {
+			handlePickUpResponse(json);
 
 		} else {
 			System.err.println("Unknown action");
@@ -184,6 +195,55 @@ public class WorkController {
 		json.put("y", pos.getY());
 
 		return json;
+	}
+
+	private JSONObject createPickUpMsg() {
+		JSONObject json = new JSONObject();
+		json.put("action", "pick-up");
+
+		return json;
+	}
+
+	private JSONObject createDropMsg() {
+		JSONObject json = new JSONObject();
+		json.put("action", "drop");
+
+		return json;
+	}
+
+	private void handleMoveResponse(JSONObject response) {
+		if (response.getBoolean("approved")) {
+			try {
+				pController.moveTo(new Position(response.getInt("x"), response.getInt("y")));
+			} catch (WrongMoveException e) {
+				//TODO
+			}
+
+		} else {
+			System.err.println(TAG + "Wrong move");
+			System.out.println(TAG + "making random move");
+			try {
+				cController.sendMessage(createMoveMsg(pController.getNextMovePossibleRandom()));
+			} catch (SendMessageErrorException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void handleDropResponse(JSONObject response) {
+		if (response.getBoolean("approved")) {
+			pController.dropPiece();
+		} else {
+			System.err.println(TAG + "cannot drop piece");
+		}
+	}
+
+	private void handlePickUpResponse(JSONObject response) {
+		if (response.getBoolean("approved")) {
+			pController.pickUpPiece();
+		} else {
+			System.err.println(TAG + "cannot pick up piece");
+		}
 	}
 
 	private void exchangeInfo() {

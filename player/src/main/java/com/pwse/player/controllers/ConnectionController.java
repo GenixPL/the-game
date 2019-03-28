@@ -5,6 +5,7 @@ import com.pwse.player.models.Exceptions.CloseConnectionFailException;
 import com.pwse.player.models.Exceptions.OpenConnectionFailException;
 import com.pwse.player.models.Exceptions.ReadMessageErrorException;
 import com.pwse.player.models.Exceptions.SendMessageErrorException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.DataInputStream;
@@ -26,6 +27,8 @@ public class ConnectionController {
 	private DataInputStream reader;
 	private DataOutputStream writer;
 	private String lastAction = "lack";
+	private boolean isPieceInCurrentPlace;
+	private boolean isGoalInCurrentPlace;
 
 
 
@@ -66,15 +69,24 @@ public class ConnectionController {
 	}
 
 	public JSONObject getMessage() throws ReadMessageErrorException {
+		System.out.println(TAG + "receiving message");
 		String msg = null;
+		JSONObject json = null;
 
-		try {
-			msg = reader.readUTF();
-		} catch (IOException e) {
-			throw new ReadMessageErrorException();
+		while (json == null) {
+			try {
+				msg = reader.readUTF();
+			} catch (IOException e) {
+				throw new ReadMessageErrorException();
+			}
+
+			json = new JSONObject(msg);
 		}
 
-		return new JSONObject(msg);
+		System.out.println(TAG + "message received: " + json.toString());
+		markPieceAndGoal(json);
+
+		return json;
 	}
 
 	public void sendMessage(JSONObject json) throws SendMessageErrorException {
@@ -90,5 +102,45 @@ public class ConnectionController {
 		}
 
 		System.out.println(TAG + "message sent");
+	}
+
+	public String getLastAction() {
+		return lastAction;
+	}
+
+	public boolean isPieceInCurrentPlace() {
+		return isPieceInCurrentPlace;
+	}
+
+	public boolean isGoalInCurrentPlace() {
+		return isGoalInCurrentPlace;
+	}
+
+
+
+	private void markPieceAndGoal(JSONObject json) {
+		isGoalInCurrentPlace = false;
+		isPieceInCurrentPlace = false;
+
+		if (!json.getString("action").equals("move")) {
+			return;
+		}
+
+		if (!json.getBoolean("approved")) {
+			//otherwise field array is empty and program crashes
+			return;
+		}
+
+		JSONObject fieldInfo = json.getJSONObject("field");
+		JSONArray array = fieldInfo.getJSONArray("field");
+		for (int i = 0; i < array.length(); i++) {
+			if (array.getString(i).equals("goal")) {
+				isGoalInCurrentPlace = true;
+			}
+
+			if (array.getString(i).equals("piece")) {
+				isPieceInCurrentPlace = true;
+			}
+		}
 	}
 }

@@ -13,6 +13,9 @@ import org.json.JSONObject;
 
 public class WorkController {
 
+	//TODO: there should be Logger which would take some value and would block or allow to print certain logs
+	// (without debugging there is no need for such spam)
+
 	private final String TAG = this.getClass().getSimpleName() + ": ";
 
 	private ConnectionController cController;
@@ -163,7 +166,7 @@ public class WorkController {
 		int y = json.getInt("y");
 
 		if (bController.canPlayerWithIdMoveTo(id, x, y)) {
-			bController.movePlayerTo(id, x, y);
+			bController.movePlayerWithIdTo(id, x, y);
 			json.put("approved", true);
 			json.put("manhattan", bController.getManhattanDistanceToNearestPiece(x, y));
 			json.put("field", bController.getFieldInfo(x, y));
@@ -202,7 +205,7 @@ public class WorkController {
 
 	private void handleDropAction(JSONObject json) {
 		int id = json.getInt("id");
-
+		//TODO:error
 		if (bController.canPlayerWithIdDropPiece(id)) {
 			bController.dropPieceByPlayerWithId(id);
 			json.put("approved", true);

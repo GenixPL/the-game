@@ -67,7 +67,7 @@ public class BoardController {
 	}
 
 	public void printBoard() {
-		BoardPrinter.print(bDim, players, pieces, goals);
+		BoardPrinter.print(bDim, players, pieces, goals, redTeam, blueTeam);
 	}
 
 	public boolean canPlayerWithIdMoveTo(int playerId, int posX, int posY) {
@@ -86,7 +86,7 @@ public class BoardController {
 		}
 	}
 
-	public void movePlayerTo(int playerId, int posX, int posY) {
+	public void movePlayerWithIdTo(int playerId, int posX, int posY) {
 		try {
 			BoardChecker.canPlayerMoveTo(posX, posY, players.get(playerId), bDim, players);
 
@@ -263,7 +263,7 @@ public class BoardController {
 				innerArray.put("red-area");
 			}
 
-			if (y < (bDim.getHeight() - bDim.getHeightOfTeamArea() - 1)) { //TODO: it may be wrong
+			if (y > (bDim.getHeight() - bDim.getHeightOfTeamArea() - 1)) { //TODO: it may be wrong
 				innerArray.put("blue-area");
 			}
 
@@ -368,12 +368,14 @@ public class BoardController {
 	private void addPlayers() { //TODO: this will be change due to the algo in which players are distributed or not
 		for (int i = 0; i < numOfPlayers; i++) {
 			if (i % 2 == 0) {
-				Player newPlayer = new Player(i, TeamColor.blue, blueTeam.getNumOfPlayers(), bDim.getHeight() - 1);
+				//`blueTeam.getNumOfPlayers()` + 1 this "+1" move spawn field one to right in order to don't cause error in player's movement logic (should be fixed)
+				Player newPlayer = new Player(i, TeamColor.blue, blueTeam.getNumOfPlayers() + 1, bDim.getHeight() - 1);
 				players.add(newPlayer);
 				blueTeam.addPlayer(newPlayer);
 
 			} else {
-				Player newPlayer = new Player(i, TeamColor.red, redTeam.getNumOfPlayers(), 0);
+				//`blueTeam.getNumOfPlayers()` + 1 this "+1" move spawn field one to right in order to don't cause error in player's movement logic (should be fixed)
+				Player newPlayer = new Player(i, TeamColor.red, redTeam.getNumOfPlayers() + 1, 0);
 				players.add(newPlayer);
 				redTeam.addPlayer(newPlayer);
 			}

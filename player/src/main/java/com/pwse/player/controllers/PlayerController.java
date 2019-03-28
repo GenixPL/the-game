@@ -6,7 +6,11 @@ import com.pwse.player.models.BoardDimensions;
 import com.pwse.player.models.Exceptions.WrongMoveException;
 import com.pwse.player.models.Position;
 
+import java.util.Random;
+
 public class PlayerController {
+
+	private final String TAG = this.getClass().getSimpleName() + ": ";
 
 	private MovementController mController;
 	private boolean hasPiece;
@@ -19,6 +23,11 @@ public class PlayerController {
 	}
 
 	public void moveTo(Position pos) throws WrongMoveException {
+		if (hasPiece) {
+			System.out.println(TAG + "\t\tmoving with piece");
+		} else {
+			System.out.println(TAG + "\t\tmoving without piece");
+		}
 		mController.moveTo(pos);
 	}
 
@@ -39,12 +48,12 @@ public class PlayerController {
 	}
 
 	public void pickUpPiece() {
-		//TODO: throw
+		System.out.println(TAG + "\t\t picking up");
 		hasPiece = true;
 	}
 
 	public void dropPiece() {
-		//TODO: throw
+		System.out.println(TAG + "\t\t dropping");
 		hasPiece = false;
 	}
 
@@ -55,5 +64,28 @@ public class PlayerController {
 	public void destroyPiece() {
 		//TODO
 		//InfoSingleton.getInstance().getBoardInfo().removePiece();
+	}
+
+	public Position getNextMove() {
+		if (hasPiece) {
+			return mController.getMoveToGoalCords();
+		} else {
+			return mController.getMoveToPieceCords();
+		}
+	}
+
+	public Position getNextMovePossibleRandom() {
+		Random random = new Random();
+		int a = random.nextInt(20);
+
+		if (a < 5) {
+			return mController.getRandomMove(a);
+		} else {
+			return getNextMove();
+		}
+	}
+
+	public boolean hasPiece() {
+		return hasPiece;
 	}
 }

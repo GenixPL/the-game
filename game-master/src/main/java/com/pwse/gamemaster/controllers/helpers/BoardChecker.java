@@ -77,7 +77,7 @@ public class BoardChecker {
 				throw new EnemyAreaException();
 			}
 		} else {
-			if (posY < (dim.getHeightOfTeamArea() - 1)) {
+			if (posY < dim.getHeightOfTeamArea()) {
 				throw new EnemyAreaException();
 			}
 		}

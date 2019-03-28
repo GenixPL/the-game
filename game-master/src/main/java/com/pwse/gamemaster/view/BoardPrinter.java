@@ -5,6 +5,7 @@ import com.pwse.gamemaster.models.goal.Goal;
 import com.pwse.gamemaster.models.board.BoardDimensions;
 import com.pwse.gamemaster.models.piece.Piece;
 import com.pwse.gamemaster.models.player.Player;
+import com.pwse.gamemaster.models.team.Team;
 
 import java.util.ArrayList;
 
@@ -18,10 +19,12 @@ public class BoardPrinter {
 	 * Print Goal over Piece //TODO: or not? (what when player drops sham and leaves)
 	 * Print Piece over background
 	 */
-	public static void print(BoardDimensions dim, ArrayList<Player> players, ArrayList<Piece> pieces, ArrayList<Goal> goals) {
+	public static void print(BoardDimensions dim, ArrayList<Player> players, ArrayList<Piece> pieces, ArrayList<Goal> goals, Team redTeam, Team blueTeam) {
 		//make space for readability
 		System.out.println();
 		System.out.println();
+
+		printScores(redTeam, blueTeam);
 
 		//print upper line
 		printHorizontalLine(dim.getWidth(), Colors.redTeam);
@@ -57,14 +60,17 @@ public class BoardPrinter {
 
 				System.out.print(toPrint);
 			}
-			System.out.print("|\n");
+			System.out.print("|" + y + "\n");
 		}
 
 		//print bottom line
 		printHorizontalLine(dim.getWidth(), Colors.blueTeam);
 	}
 
-
+	private static void printScores(Team red, Team blue) {
+		System.out.println("\t" + Colors.redTeam + "Score: " + red.getScore() + Colors.ANSI_RESET);
+		System.out.println("\t" + Colors.blueTeam + "Score: " + blue.getScore() + Colors.ANSI_RESET);
+	}
 
 	private static Piece getPieceAtPosition(int posX, int posY, ArrayList<Piece> pieces) {
 		for (Piece p: pieces) {
