@@ -190,7 +190,7 @@ public class WorkController {
 			shouldWork = false;
 
 			try {
-				plCommunicator.sendToAll(json);
+				plCommunicator.sendToAll(json); //TODO: it should wait for responses from players
 			} catch (SendMessageErrorException e) {
 				printExceptionAndEnd(e);
 			}

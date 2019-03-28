@@ -91,8 +91,9 @@ public class BoardChecker {
 			}
 		}
 
-		if (posX < player.getPosX() - 1 || posX > player.getPosX() + 1 || posY < player.getPosY() - 1 || posY > player.getPosY() + 1) {
-			return true;
+		//check if he move by one field
+		if (!isPlayerMovedByOneField(posX, posY, player)) {
+			return false;
 		}
 
 		return true;
@@ -108,5 +109,22 @@ public class BoardChecker {
 		}
 
 		return true;
+	}
+
+	private static boolean isPlayerMovedByOneField(int newX, int newY, Player player) {
+		int curX = player.getPosX();
+		int curY = player.getPosY();
+
+		if (newX == curX - 1 && newY == curY) {
+			return true;
+		} else if (newX == curX + 1 && newY == curY) {
+			return true;
+		} else if (newX == curX && newY - 1 == curY) {
+			return true;
+		} if (newX == curX && newY + 1 == curY) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

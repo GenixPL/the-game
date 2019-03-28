@@ -68,11 +68,7 @@ public class WorkController {
 		//work until "end" message appears
 		while (shouldWork) {
 			JSONObject decision = getJsonWithDecision();
-			try {
-				cController.sendMessage(decision);
-			} catch (SendMessageErrorException e) {
-				e.printStackTrace();
-			}
+			cController.sendMessage(decision);
 
 			try {
 				JSONObject response;
@@ -86,7 +82,8 @@ public class WorkController {
 			//TODO: this delay should be moved to GM but due to bugs with threads (as I believe), I will leave it here for now
 			try {
 
-				Thread.sleep(new Random().nextInt(1000) + 1000);
+//				Thread.sleep(new Random().nextInt(1000) + 1000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -177,15 +174,10 @@ public class WorkController {
 			System.exit(-1);
 		}
 
-		try {
-			System.out.println(TAG + "sending ready message");
-			cController.sendMessage(Messenger.createMsgWithAction("ready"));
-			System.out.println(TAG + "message sent");
 
-		} catch (SendMessageErrorException e) {
-			System.err.println(TAG + e.getMessage());
-			System.exit(-1);
-		}
+		System.out.println(TAG + "sending ready message");
+		cController.sendMessage(Messenger.createMsgWithAction("ready"));
+		System.out.println(TAG + "message sent");
 	}
 
 	private JSONObject createMoveMsg(Position pos) {
@@ -216,17 +208,13 @@ public class WorkController {
 			try {
 				pController.moveTo(new Position(response.getInt("x"), response.getInt("y")));
 			} catch (WrongMoveException e) {
-				//TODO
+				System.err.println(TAG + "WRONG MOVE EXCEPTION");
 			}
 
 		} else {
 			System.err.println(TAG + "Wrong move");
 			System.out.println(TAG + "making random move");
-			try {
-				cController.sendMessage(createMoveMsg(pController.getNextMovePossibleRandom()));
-			} catch (SendMessageErrorException e) {
-				e.printStackTrace();
-			}
+			cController.sendMessage(createMoveMsg(pController.getNextMovePossibleRandom()));
 		}
 	}
 

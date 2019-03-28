@@ -89,7 +89,7 @@ public class ConnectionController {
 		return json;
 	}
 
-	public void sendMessage(JSONObject json) throws SendMessageErrorException {
+	public void sendMessage(JSONObject json) {
 		System.out.println(TAG + "sending message: " + json.toString());
 
 		try {
@@ -98,7 +98,6 @@ public class ConnectionController {
 
 		} catch (IOException e) {
 			System.err.println(TAG + e.getMessage());
-			throw new SendMessageErrorException();
 		}
 
 		System.out.println(TAG + "message sent");
