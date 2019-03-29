@@ -1,0 +1,17 @@
+//pl sends
+{
+    "action": "drop"
+}
+
+//cs sends to gm
+{
+    "action": "drop",
+    "id": "..."
+}
+
+//gm sends
+{
+    "action": "drop",
+    "id": "...",
+    "approved": "true/false"
+}
