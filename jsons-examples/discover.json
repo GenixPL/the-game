@@ -1,0 +1,26 @@
+//pl sends
+{
+    "action": "discover"
+}
+
+//cs sends to gm
+{
+    "action": "discover",
+    "id": "..."
+}
+
+//gm sends
+{
+    "action": "discover",
+    "id": "...",
+    "fields": [
+        {
+            "x": "...",
+            "y": "...",
+            "field": ["player/piece/goal/non/blue-area/red-area/outside"]
+        },
+        {
+            "..."
+        }
+    ]
+}

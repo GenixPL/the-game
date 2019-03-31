@@ -71,7 +71,7 @@ public class GmCommunicator {
 		}
 	}
 
-	public String getMessage() throws ReadMessageErrorException {
+	public JSONObject getMessage() throws ReadMessageErrorException {
 		System.out.println(TAG + "getting message");
 		String msg = null;
 
@@ -84,7 +84,7 @@ public class GmCommunicator {
 		}
 
 		System.out.println(TAG + "got the message");
-		return msg;
+		return new JSONObject(msg);
 	}
 
 	public boolean isMessageWaiting() {

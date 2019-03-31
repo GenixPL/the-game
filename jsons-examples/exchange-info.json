@@ -1,0 +1,26 @@
+//pl sends
+{
+    "action": "exchange-info"
+}
+
+//cs sends to gm
+{
+    "action": "exchange-info",
+    "reply-to": "..."
+}
+
+//other team members send
+{
+    "action": "exchange-info",
+    "reply-to": "...",
+    "fields": [
+        {
+            "x": "...",
+            "y": "...",
+            "field": {...}
+        },
+        {
+            "..."
+        }
+    ]
+}

@@ -1,0 +1,25 @@
+//player sends
+{
+    "action": "move",
+    "x": "...",
+    "y": "..."
+}
+
+//cs sends to gm
+{
+    "action": "move",
+    "id": "...",
+    "x": "...",
+    "y": "..."
+}
+
+//gm sends
+{
+    "action": "move",
+    "id": "...",
+    "x": "...",
+    "y": "...",
+    "approved": "true/false",
+    "mahattan": ".../-1",
+    "field": ["player/piece/goal/non/blue-area/red-area/outside"] / []
+}

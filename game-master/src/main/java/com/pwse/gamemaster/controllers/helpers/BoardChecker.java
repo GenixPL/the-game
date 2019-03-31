@@ -14,6 +14,8 @@ import java.util.ArrayList;
 
 public class BoardChecker {
 
+	private static final String TAG = "BoardChecker: ";
+
 	private BoardChecker() { }
 
 
@@ -28,6 +30,15 @@ public class BoardChecker {
 		return true;
 	}
 
+	/**
+	 * Function checks if there is a piece at given position and return its id or -1.
+	 * @param posX
+	 * @param posY
+	 * @param pieces
+	 * @param dim
+	 * @return piece id or -1 if there is no piece
+	 * @throws CordsOutsideBoardException
+	 */
 	public static int isPieceAtPosition(
 			int posX,
 			int posY,
@@ -68,7 +79,7 @@ public class BoardChecker {
 				throw new EnemyAreaException();
 			}
 		} else {
-			if (posY < (dim.getHeightOfTeamArea() - 1)) {
+			if (posY < dim.getHeightOfTeamArea()) {
 				throw new EnemyAreaException();
 			}
 		}
@@ -82,7 +93,10 @@ public class BoardChecker {
 			}
 		}
 
-		//TODO: check if new location is one step from current
+		//check if he move by one field
+		if (!isPlayerMovedByOneField(posX, posY, player)) {
+			return false;
+		}
 
 		return true;
 	}
@@ -97,5 +111,23 @@ public class BoardChecker {
 		}
 
 		return true;
+	}
+
+	private static boolean isPlayerMovedByOneField(int newX, int newY, Player player) {
+		int curX = player.getPosX();
+		int curY = player.getPosY();
+
+		if (newX == curX - 1 && newY == curY) {
+			return true;
+		} else if (newX == curX + 1 && newY == curY) {
+			return true;
+		} else if (newX == curX && newY  == curY - 1) {
+			return true;
+		} if (newX == curX && newY == curY + 1) {
+			return true;
+		} else {
+			System.err.println(TAG + "player with id: " + player.getId() + " wants to perform wrong move (not in one of four directions)");
+			return false;
+		}
 	}
 }

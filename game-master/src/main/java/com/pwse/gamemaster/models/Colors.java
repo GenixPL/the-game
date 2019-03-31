@@ -12,6 +12,7 @@ public class Colors {
 	public static final String background = "\u001B[90m";
 	public static final String piece = "\u001B[33m";
 	public static final String goal = "\u001B[30m" + "\u001B[43m"; //foreground + background
+	public static final String white = "\u001B[37m";
 
 	public static final String error = "\u001B[37m" + "\u001B[47m";//foreground + background
 

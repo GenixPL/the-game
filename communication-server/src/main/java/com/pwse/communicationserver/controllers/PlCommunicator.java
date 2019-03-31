@@ -2,13 +2,13 @@ package com.pwse.communicationserver.controllers;
 
 import com.pwse.communicationserver.models.PlayerContact;
 import com.pwse.communicationserver.models.exceptions.PlConnectionFailedException;
+import com.pwse.communicationserver.models.exceptions.ReadMessageErrorException;
 import com.pwse.communicationserver.models.exceptions.SendMessageErrorException;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-
 
 
 public class PlCommunicator {
@@ -25,7 +25,6 @@ public class PlCommunicator {
 			playersContacts.add(new PlayerContact(i, portsToConnect[i]));
 		}
 	}
-
 
 
 	public void openSockets() throws PlConnectionFailedException {
@@ -82,12 +81,12 @@ public class PlCommunicator {
 	}
 
 	public void sendToAll(JSONObject json) throws SendMessageErrorException {
-		System.out.println(TAG + "sending message to all pl");
+		System.out.println(TAG + "sending message to all players");
 
 		try {
 			for (PlayerContact plC : playersContacts) {
-			plC.getWriter().writeUTF(json.toString());
-		}
+				plC.getWriter().writeUTF(json.toString());
+			}
 
 		} catch (IOException e) {
 			System.err.println(TAG + e.getMessage());
@@ -95,5 +94,99 @@ public class PlCommunicator {
 		}
 
 		System.out.println(TAG + "messages sent");
+	}
+
+	public void sendMsgToPlayerWithId(int id, JSONObject json) throws SendMessageErrorException {
+		System.out.println(TAG + "sending message to player with id: " + id + " msg: " + json.toString());
+
+		try {
+			for (PlayerContact plC : playersContacts) {
+				if (plC.getId() == id) {
+					plC.getWriter().writeUTF(json.toString());
+				}
+			}
+
+		} catch (IOException e) {
+			System.err.println(TAG + e.getMessage());
+			throw new SendMessageErrorException();
+		}
+
+		System.out.println(TAG + "message sent");
+	}
+
+	public void sendMsgToTeamFromPlayerWithId(int id, JSONObject json) throws SendMessageErrorException {
+		String team = playersContacts.get(id).getTeamColor();
+
+		System.out.println(TAG + "sending messages to team: " + team + " from player with id: " + id + " msg: " + json.toString());
+
+		try {
+			for (PlayerContact plC : playersContacts) {
+				if (plC.getTeamColor().equals(team) && plC.getId() != id) {
+					plC.getWriter().writeUTF(json.toString());
+				}
+			}
+
+		} catch (IOException e) {
+			System.err.println(TAG + e.getMessage());
+			throw new SendMessageErrorException();
+		}
+
+		System.out.println(TAG + "messages sent");
+	}
+
+	public boolean isMessageWaitingFromPlayerWithId(int id) {
+		boolean isReady = false;
+
+		for (PlayerContact plC : playersContacts) {
+			if (plC.getId() == id) {
+				try {
+					isReady = (plC.getReader().available() != 0);
+				} catch (IOException e) {
+					System.err.println(e.getMessage());
+				}
+			}
+		}
+
+		return isReady;
+	}
+
+	public JSONObject getMessageFromPlayerWithId(int id) throws ReadMessageErrorException {
+		System.out.println(TAG + "getting message from player with id: " + id);
+		String msg = null;
+
+		for (PlayerContact plC : playersContacts) {
+			if (plC.getId() == id) {
+				try {
+					msg = plC.getReader().readUTF();
+				} catch (IOException e) {
+					System.err.println(TAG + e.getMessage());
+					throw new ReadMessageErrorException();
+				}
+			}
+		}
+
+		System.out.println(TAG + "received message: " + msg);
+
+		return new JSONObject(msg);
+	}
+
+	public void setPlayerTeamFromJson(JSONObject json) {
+		int playerId = getPlayerIdFromJson(json);
+
+		for (PlayerContact plC : playersContacts) {
+			if (plC.getId() == playerId) {
+				plC.setTeamColor(getTeamFromJson(json));
+			}
+		}
+	}
+
+	public int getPlayerIdFromJson(JSONObject json) {
+		return json.getInt("id");
+	}
+
+
+
+	private String getTeamFromJson(JSONObject json) {
+		return json.getString("team");
 	}
 }

@@ -9,7 +9,7 @@ import java.net.Socket;
 public class PlayerContact {
 
 	private int id;
-	private String teamColor; //TODO
+	private String teamColor;
 	private int port;
 	private ServerSocket serverSocket;
 	private Socket playerSocket;
@@ -61,5 +61,13 @@ public class PlayerContact {
 
 	public DataOutputStream getWriter() {
 		return writer;
+	}
+
+	public void setTeamColor(String teamColor) {
+		this.teamColor = teamColor;
+	}
+
+	public String getTeamColor() {
+		return teamColor;
 	}
 }

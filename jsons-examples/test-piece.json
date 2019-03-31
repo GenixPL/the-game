@@ -1,0 +1,18 @@
+//pl sends
+{
+    "action": "test-piece"
+}
+
+//cs sends to gm
+{
+    "action": "test-piece",
+    "id": "..."
+}
+
+//gm sends
+{
+    "action": "test-piece",
+    "id": "...",
+    "approved": "true/false",
+    "is-correct": "-1/0/1"
+}

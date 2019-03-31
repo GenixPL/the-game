@@ -1,0 +1,17 @@
+//pl sends
+{
+    "action": "pick-up"
+}
+
+//cs sends to gm
+{
+    "action": "pick-up",
+    "id": "..."
+}
+
+//gm sends
+{
+    "action": "pick-up",
+    "id": "...",
+    "approved": "true/false"
+}
